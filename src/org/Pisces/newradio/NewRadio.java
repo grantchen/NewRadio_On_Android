@@ -45,18 +45,6 @@ public class NewRadio extends Activity {
     }
 
     
-    private InputStream readEarthquakeDataFromFile()
-    {
-		//从本地获取地震数据
-		InputStream inStream = null;
-		try {
-			inStream = this.getAssets().open("chendan.xml");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return inStream;
-    }
     
     //var
     ListView list;  

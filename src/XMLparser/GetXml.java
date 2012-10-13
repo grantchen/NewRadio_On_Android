@@ -20,7 +20,7 @@ public class GetXml {
 	
 	    public static InputStream getXmlFromInternet(String url)
 	    {
-	    	//从网络上获取实时地震数据
+	    	//从网络上获取数据
 	    	URL infoUrl = null;
 	    	InputStream inStream = null;
 	    	try {
