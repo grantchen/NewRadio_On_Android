@@ -1,0 +1,15 @@
+<?xml version="1.0" ?> 
+<chendan>
+
+  <program>
+	  <id>1</id>
+	  <author>chendan</author>
+	<title>麦兜</title>
+	<subtitle>春田花花幼儿园</subtitle>
+	<pushtime>2012.10.11</pushtime>
+	<how_long>10</how_long>
+	<comment>这是测试的</comment>
+	<img>/chendan/1.jpg</img>
+	<source>/chendan/1.mp3</source>
+  </program>
+</chendan>
