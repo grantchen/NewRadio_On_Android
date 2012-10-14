@@ -1,54 +1,76 @@
 package org.Pisces.newradio;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import org.Pisces.GUI.ProgramListView;
+import org.Pisces.IO.DirHelper;
 
-import XMLparser.ComparePrograms;
-import XMLparser.GetXml;
-import XMLparser.ProgramEntry;
-import XMLparser.PullProgramHandler;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.Toast;
 
 public class NewRadio extends Activity {
 
+	//var
+	ProgramListView listView;
+	//var
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_radio);
         
-        InputStream programStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/chendan.xml");
-        //InputStream programStream = readEarthquakeDataFromFile();
+        if(!DirHelper.isFileExist(".NewRadio"))
+        {
+        	DirHelper.creatSDDir(".NewRadio");
+        }
         
-        PullProgramHandler pullHandler = new PullProgramHandler();
         
-        programEntryList = pullHandler.parse(programStream);
+        listView = new ProgramListView(this,"chendan");
         
-        Collections.sort(programEntryList,new ComparePrograms());
-        
-        list = (ListView) this.findViewById(R.id.listView1);
-        adapter = new ArrayAdapter<ProgramEntry>(this, android.R.layout.simple_list_item_1, programEntryList);
-        list.setAdapter(adapter);  
     }
+    
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_new_radio, menu);
         return true;
     }
+    
+    private long exitTime = 0;
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	if(keyCode == KeyEvent.KEYCODE_BACK 
+    			&&event.getAction() == KeyEvent.ACTION_DOWN){   
+    	    if((System.currentTimeMillis()-exitTime) > 2000){  
+    	        Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+    	        exitTime = System.currentTimeMillis();   
+    		} else {
+    			finish();
+    			System.exit(0);
+    		}
+    	    return true;   
+        }
+    	return super.onKeyDown(keyCode, event);
+    }
     
     
-    //var
-    ListView list;  
-    ArrayAdapter<ProgramEntry> adapter;  
-    ArrayList<ProgramEntry> programEntryList; 
+    public void gotoOneProgram(String info)
+    {
+		Intent intent = new Intent();
+		intent.setClass(this, ProgramView.class);
+		intent.putExtra("INFO", info);
+		startActivity(intent);
+    }
+    
+    public void swichView(View v)
+    {
+    	
+    }
+    
+    
     
 }

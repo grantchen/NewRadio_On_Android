@@ -1,0 +1,15 @@
+./gen/org/Pisces/newradio/BuildConfig.java
+./gen/org/Pisces/newradio/R.java
+./src/org/Pisces/GUI/ProgramListView.java
+./src/org/Pisces/IO/Dao.java
+./src/org/Pisces/IO/DBHelper.java
+./src/org/Pisces/IO/DirHelper.java
+./src/org/Pisces/IO/Downloader.java
+./src/org/Pisces/IO/DownloadInfo.java
+./src/org/Pisces/IO/LoadInfo.java
+./src/org/Pisces/newradio/NewRadio.java
+./src/org/Pisces/newradio/ProgramView.java
+./src/org/Pisces/XMLparser/ComparePrograms.java
+./src/org/Pisces/XMLparser/GetXml.java
+./src/org/Pisces/XMLparser/ProgramEntry.java
+./src/org/Pisces/XMLparser/PullProgramHandler.java
