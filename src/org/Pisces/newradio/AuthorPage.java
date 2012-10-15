@@ -1,6 +1,6 @@
 package org.Pisces.newradio;
 
-import org.Pisces.GUI.ProgramListView;
+import org.Pisces.GUI.AuthorListView;
 import org.Pisces.IO.DBHelper;
 import org.Pisces.IO.Dao;
 import org.Pisces.IO.DirHelper;
@@ -16,7 +16,7 @@ import android.widget.Toast;
 public class AuthorPage extends Activity {
 
 	//var
-	ProgramListView listView;
+	AuthorListView listView;
 	//var
 	
     @Override
@@ -30,7 +30,7 @@ public class AuthorPage extends Activity {
         }
         
         
-        listView = new ProgramListView(this,"chendan");
+        listView = new AuthorListView(this);
         
     }
     
@@ -53,9 +53,6 @@ public class AuthorPage extends Activity {
     		} else {
     			finish();
     			
-    			if(Dao.isCon())
-    				Dao.closeDb();
-    			
     			System.exit(0);
     		}
     	    return true;   
@@ -64,14 +61,6 @@ public class AuthorPage extends Activity {
     }
     
     
-    public void gotoOneProgram(String info)
-    {
-		Intent intent = new Intent();
-		intent.setClass(this, ProgramView.class);
-		intent.putExtra("INFO", info);
-		startActivity(intent);
-    }
-    
     public void about(View v)
     {
     	Intent intent = new Intent();
@@ -79,6 +68,10 @@ public class AuthorPage extends Activity {
 		this.startActivity(intent);
     }
     
+    public void refersh(View v)
+    {
+    	listView.refersh(v);
+    }
     
     
 }

@@ -8,7 +8,6 @@ Author: lazydomino@163.com(pisces)
 
 package org.Pisces.XMLparser;
 
-import java.util.Comparator;
 import java.util.Date;
 
 public class ProgramEntry {

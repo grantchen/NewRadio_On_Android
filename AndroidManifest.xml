@@ -30,6 +30,10 @@
             android:name=".About"
             android:label="@string/title_activity_new_radio" >
         </activity>
+        <activity
+            android:name=".ListProgram"
+            android:label="@string/title_activity_new_radio" >
+        </activity>
     </application>
 
 </manifest>

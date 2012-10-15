@@ -8,14 +8,14 @@ Author: lazydomino@163.com(pisces)
 
 package org.Pisces.XMLparser;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+
+import android.util.Log;
 
 public class GetXml {
 
@@ -43,10 +43,14 @@ public class GetXml {
 			}
 			return inStream;
 	    }
-	    public  InputStream getXmlFromSDcard(String author)
+	    public InputStream getXmlFromSDcard(String PATH)
 	    {
+	    	if(!PATH.contains(".xml"))
+	    	{
+	    		Log.e("ERROR", "本地xml路径不合法！");
+	    	}
 	    	InputStream inStream = getClass().getClassLoader().getResourceAsStream(
-	    			android.os.Environment.getExternalStorageDirectory()+"/.NewRadio/"+author+".xml"
+	    			PATH
 	    			);
 	    	return inStream;
 	    }

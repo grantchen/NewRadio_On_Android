@@ -1,20 +1,11 @@
-/*
-ID: lazydom1
-LANG: JAVA
-TASK: Dao.java
-Created on: 2012-10-14-下午12:21:16
-Author: lazydomino@163.com(pisces)
-*/
-
 package org.Pisces.IO;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-import android.content.Context;
-import android.database.Cursor;
+ import android.content.Context;
+ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 
@@ -23,19 +14,18 @@ import android.database.sqlite.SQLiteDatabase;
   * 一个业务类
   */
  public class Dao {
-     private static DBHelper dbHelper;
-     private static boolean isCon = false;
+     private DBHelper dbHelper;
 
      public Dao(Context context) {
          dbHelper = new DBHelper(context);
-         isCon = true;
+         
      }
 
      /**
       * 查看数据库中是否有数据
       */
      public boolean isHasInfors(String urlstr) {
-         SQLiteDatabase database = dbHelper.getReadableDatabase();
+         SQLiteDatabase database = dbHelper.getWritableDatabase();
         String sql = "select count(*)  from download_info where url=?";
          Cursor cursor = database.rawQuery(sql, new String[] { urlstr });
          cursor.moveToFirst();
@@ -62,7 +52,7 @@ import android.database.sqlite.SQLiteDatabase;
       */
      public List<DownloadInfo> getInfos(String urlstr) {
          List<DownloadInfo> list = new ArrayList<DownloadInfo>();
-         SQLiteDatabase database = dbHelper.getReadableDatabase();
+         SQLiteDatabase database = dbHelper.getWritableDatabase();
          String sql = "select thread_id, start_pos, end_pos,compelete_size,url from download_info where url=?";
          Cursor cursor = database.rawQuery(sql, new String[] { urlstr });
          while (cursor.moveToNext()) {
@@ -79,7 +69,7 @@ import android.database.sqlite.SQLiteDatabase;
      * 更新数据库中的下载信息
       */
      public void updataInfos(int threadId, int compeleteSize, String urlstr) {
-         SQLiteDatabase database = dbHelper.getReadableDatabase();
+         SQLiteDatabase database = dbHelper.getWritableDatabase();
          String sql = "update download_info set compelete_size=? where thread_id=? and url=?";
          Object[] bindArgs = { compeleteSize, threadId, urlstr };
         database.execSQL(sql, bindArgs);
@@ -87,22 +77,16 @@ import android.database.sqlite.SQLiteDatabase;
      /**
       * 关闭数据库
       */
-     public static void closeDb() {
+     public void closeDb() {
          dbHelper.close();
-         isCon = false;
     }
 
      /**
      * 下载完成后删除数据库中的数据
       */
      public void delete(String url) {
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
          database.delete("download_info", "url=?", new String[] { url });
          database.close();
-     }
-     
-     public static boolean isCon()
-     {
-    	 return isCon;
      }
  }

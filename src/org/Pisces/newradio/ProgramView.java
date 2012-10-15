@@ -54,12 +54,17 @@ public class ProgramView extends Activity {
 	private OnClickListener stop;//停止播放
 	private OnClickListener delete;//删除文件
 	
+	private File f ;
+	private File fileFlag;
 	private Downloader downsound;//下载器
 	
-	private static MediaPlayer mp;
-	DelayThread dThread;
+	private static MediaPlayer mp = null;
+	private static String Playing = null;
+	private DelayThread dThread = null;
 	
-	boolean fileIsFinished = false;
+	private String res; 
+	private TextView how_long;
+	private boolean fileIsFinished = false;
 	private Button but1 = null;
 	private Button but2 = null;
 	private ProgressBar bar;
@@ -93,12 +98,12 @@ public class ProgramView extends Activity {
 	        
 	        pushtime.setText("发布时间: "+dateF.format(date));
 	        
-	        TextView how_long = (TextView) findViewById(R.id.textView3);
+	        how_long = (TextView) findViewById(R.id.textView3);
 	        long time = bundle.getLong("how_long");
 	        long hour = time/3600;time%=3600;
 	        long min = time/60;time%=60;
 	        long sec = time;
-	        String res = "";
+	        res = "";
 	        if(hour>0) res = hour+"时";
 	        if(min>0) res += min+"分";
 	        if(sec>0) res += sec+"秒";
@@ -113,112 +118,32 @@ public class ProgramView extends Activity {
 	        
 	        seekBar = (SeekBar) findViewById(R.id.seekBar1);
 	        bar = (ProgressBar) findViewById(R.id.progressBar1);
+	        seekBar.setVisibility(View.GONE);
+			bar.setVisibility(View.VISIBLE);
 	        
-	        mp = new MediaPlayer();
-	        mp.setDataSource(basePath+source);
-			mp.prepare();
 	        
-	        //判断文件是否完整
-	        if(sound.exists()&&sound.length()==bundle.getLong("filesize")&&downsound.isFirst(baseUrl+source))
+	        f = new File(basePath+source);
+	        fileFlag = new File(basePath+source+".flag");
+	        
+	        but1 = (Button) findViewById(R.id.downLoad);
+	        but2 = (Button) findViewById(R.id.deleteP);
+	        
+	        setListener();
+	        
+	        if(mp==null)
 	        {
-	        	fileIsFinished = true;
+	        	mp = new MediaPlayer();
+	    		mp.setDataSource(basePath+source);
+	    		mp.prepare();
 	        }
 	        
-	        but1 = (Button) findViewById(R.id.button1);
-	        but2 = (Button) findViewById(R.id.button2);
 	        
-	        play = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					play(v);
-					
-				}
-			};
-			pauseOnPlay = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					pauseOnPlay(v);
-				}
-			};
-			continuePlay = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					mp.start();
-					but1.setText("暂停");
-			    	but1.setOnClickListener(pauseOnPlay);
-			    	startProgressUpdate();
-
-				}
-			};
-			down = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					down(v);
-				}
-			};
-			pause = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					pause(v);
-				}
-			};
-			stop = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					stop(v);
-				}
-			};
-			delete = new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					deleteProgramFiles(v);
-				}
-			};
+	        //判断文件是否已经下载完整
+	        fileIsFinished = false;
 	        
-			bar.setVisibility(View.VISIBLE);
-			seekBar.setVisibility(View.GONE);
-			
-			seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-					startProgressUpdate();
-					int dest = seekBar.getProgress();  
-	                  
-	                int mMax = mp.getDuration();  
-	                int sMax = seekBar.getMax();  
-	                  
-	                mp.seekTo(mMax*dest/sMax); 
-				}
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress,
-						boolean fromUser) {
-					// TODO Auto-generated method stub
-					stopProgressUpdate();
-				}
-
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					// TODO Auto-generated method stub
-					stopProgressUpdate();
-				}
-				
-			});
-			
+	        if(f.exists()&&f.length()==bundle.getLong("filesize")&&fileFlag.exists())
+	        	fileIsFinished = true;
+	        
 			//文件是否已经下载完
 	        if(fileIsFinished)
 	        {
@@ -230,23 +155,34 @@ public class ProgramView extends Activity {
 	        {
 	        	but1.setText("下载");
 	        	but1.setOnClickListener(down);
+	        	
+	        	Log.v("Debug","set down listener");
+	        	
+	        	seekBar.setVisibility(View.GONE);
+				bar.setVisibility(View.VISIBLE);
 	        }
 	        
 	        //如果文件正在播放，那么应该是显示 暂停和停止按钮
-	        if(mp!=null&&mp.isPlaying())
+	        if(mp!=null)
 	        {
-	        	changetoSeekBar();
-	        	but1.setText("暂停");
-		    	but1.setOnClickListener(pauseOnPlay);
-		    	
-		    	but2.setText("停止");
-		    	but2.setOnClickListener(stop);
+		    	if(Playing!=null&&Playing.equalsIgnoreCase(basePath+source)&&mp.isPlaying())
+		    	{
+		    		changetoSeekBar();
+		    		stopProgressUpdate();
+		    		startProgressUpdate();
+		    		but1.setText("暂停");
+		    		but1.setOnClickListener(pauseOnPlay);
+		    		but2.setText("停止");
+		    		but2.setOnClickListener(stop);
+		    	}
 	        }
-	      
+	        
+	        
+	        
 	        
 		}catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}finally{
 			//关闭数据库
 			//Dao.closeDb();
@@ -281,11 +217,16 @@ public class ProgramView extends Activity {
 			Toast.makeText(this, "节目还没有下载！", Toast.LENGTH_SHORT).show();
 		}else
 		{
+			fileFlag.delete();
 			sound.delete();
 			if(img.exists())
 				img.delete();
 			but1.setText("下载");
         	but1.setOnClickListener(down);
+        	
+        	seekBar.setVisibility(View.GONE);
+			bar.setVisibility(View.VISIBLE);
+        	
 			Toast.makeText(this, "删除成功！", Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -303,10 +244,19 @@ public class ProgramView extends Activity {
 					if (bar.getProgress() == bar.getMax()) {
 						Toast.makeText(ProgramView.this, "下载完成！", Toast.LENGTH_SHORT).show();
 						
+						if(!fileFlag.exists())
+							try {
+								fileFlag.createNewFile();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								//e.printStackTrace();
+							}
+						bar.setProgress(0);
 						//bar.incrementProgressBy(-bar.getMax());
 						changetoSeekBar();
 						downsound.delete(url);
 						downsound.reset();
+						downsound = null;
 						fileIsFinished = true;
 						but1.setText("播放");
 			        	but1.setOnClickListener(play);
@@ -346,7 +296,20 @@ public class ProgramView extends Activity {
             
             int mMax = mp.getDuration();  
             int sMax = seekBar.getMax();  
-              
+            
+            int time = position/1000;
+            int hour = time/3600;time%=3600;
+            int min = time/60;time%=60;
+            int sec = time;
+            String res2 = "";
+            if(hour>0) res2=hour+"时";
+            if(min>0) res2+=min+"分";
+            if(sec>0) res2+=sec+"秒";
+            
+            if(res2.length()>1)
+            	how_long.setText(res2+"/"+res);
+            else
+            	how_long.setText(res);
             seekBar.setProgress(position*sMax/mMax);  
     	}
     };
@@ -364,22 +327,28 @@ public class ProgramView extends Activity {
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
-					Log.v("TAG","stop dThread");
+					//Log.v("TAG","stop dThread");
 				}
 				
     			if(mp.isPlaying())
     				pHandle.sendEmptyMessage(0);
+    			else return;
     		}
     	}
     }
 	
-	private void down(View v)
+	public void download(View v)
 	{
 		//先判断文件夹是否存在，不存在则建立
 		if(!DirHelper.isFileExist(".NewRadio/"+bundle.getString("author")))
 		{
 			DirHelper.creatSDDir(".NewRadio/"+bundle.getString("author"));
 		}
+		
+		if(downsound==null)
+			downsound = new Downloader(baseUrl+source,basePath+source , 4,this,mHandler );
+		
+		Log.v("Debug", "download "+source);
 		
 		but1.setText("暂停");
     	but1.setOnClickListener(pause);
@@ -435,6 +404,8 @@ public class ProgramView extends Activity {
 		but2.setText("删除");
 		but2.setOnClickListener(delete);
 		
+		how_long.setText(res);
+		
 		try {
 			
 			stopProgressUpdate();
@@ -452,13 +423,25 @@ public class ProgramView extends Activity {
 		
 	}
 	
-	private void play(View v)
+	private void playP(View v)
 	{
 		but1.setText("暂停");
     	but1.setOnClickListener(pauseOnPlay);
     	but2.setText("停止");
     	but2.setOnClickListener(stop);
     	try {
+    		
+    		
+    		if(mp!=null)
+    		{
+    			mp.stop();
+    			//mp.release();
+    		}
+    		mp = new MediaPlayer();
+    		
+    		mp.setDataSource(basePath+source);
+    		mp.prepare();
+    		
     		
     		int now = seekBar.getProgress();
             int mMax = mp.getDuration();  
@@ -472,17 +455,125 @@ public class ProgramView extends Activity {
             }
             mp.start();
 			
+            Playing = basePath+source;
+            
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch(IOException e)
+		{
+			e.printStackTrace();
 		}
     	
 	}
+	//初始化监听器
+	private void setListener()
+	{
+		/*
+         * 监听器
+         */
+        play = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				playP(v);
+				
+			}
+		};
+		pauseOnPlay = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				pauseOnPlay(v);
+			}
+		};
+		continuePlay = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				mp.start();
+				but1.setText("暂停");
+		    	but1.setOnClickListener(pauseOnPlay);
+		    	startProgressUpdate();
+
+			}
+		};
+		down = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				download(v);
+			}
+		};
+		pause = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				pause(v);
+			}
+		};
+		stop = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				stop(v);
+			}
+		};
+		delete = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				deleteProgramFiles(v);
+			}
+		};
+		
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener(){
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				int dest = seekBar.getProgress();  
+                  
+                int mMax = mp.getDuration();  
+                int sMax = seekBar.getMax();  
+                
+                mp.seekTo(mMax*dest/sMax);
+                if(!mp.isPlaying()) return;
+                startProgressUpdate();
+			}
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				// TODO Auto-generated method stub
+				if(!mp.isPlaying()) return;
+				stopProgressUpdate();
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				if(!mp.isPlaying()) return;
+				stopProgressUpdate();
+			}
+			
+		});
+		/*
+		 * end
+		 */
+	}
+	
 	private void startProgressUpdate(){
     	//开辟Thread 用于定期刷新SeekBar
+		//if(dThread==null)
 		dThread = new DelayThread(100);
     	dThread.start();
     }
