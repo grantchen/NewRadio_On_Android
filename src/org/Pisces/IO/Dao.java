@@ -24,10 +24,11 @@ import android.database.sqlite.SQLiteDatabase;
   */
  public class Dao {
      private static DBHelper dbHelper;
+     private static boolean isCon = false;
 
      public Dao(Context context) {
          dbHelper = new DBHelper(context);
-         
+         isCon = true;
      }
 
      /**
@@ -88,6 +89,7 @@ import android.database.sqlite.SQLiteDatabase;
       */
      public static void closeDb() {
          dbHelper.close();
+         isCon = false;
     }
 
      /**
@@ -97,5 +99,10 @@ import android.database.sqlite.SQLiteDatabase;
         SQLiteDatabase database = dbHelper.getReadableDatabase();
          database.delete("download_info", "url=?", new String[] { url });
          database.close();
+     }
+     
+     public static boolean isCon()
+     {
+    	 return isCon;
      }
  }

@@ -16,7 +16,7 @@ import org.Pisces.XMLparser.ComparePrograms;
 import org.Pisces.XMLparser.GetXml;
 import org.Pisces.XMLparser.ProgramEntry;
 import org.Pisces.XMLparser.PullProgramHandler;
-import org.Pisces.newradio.NewRadio;
+import org.Pisces.newradio.AuthorPage;
 import org.Pisces.newradio.ProgramView;
 import org.Pisces.newradio.R;
 
@@ -36,9 +36,9 @@ public class ProgramListView {
     private ArrayAdapter<ProgramEntry> adapter;  
     private ArrayList<ProgramEntry> programEntryList;
     private String author; 
-    private NewRadio father;
+    private AuthorPage father;
     
-	public ProgramListView(NewRadio father,String author)
+	public ProgramListView(AuthorPage father,String author)
 	{
 		super();
 		
@@ -94,7 +94,7 @@ public class ProgramListView {
 		
 	}
 	
-	public void refersh()
+	public void refersh(View v)
 	{
 		programEntryList.clear();
 		getinfo();

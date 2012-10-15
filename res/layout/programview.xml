@@ -65,6 +65,15 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/relativeLayout1"
         android:layout_marginTop="14dp" />
+     <SeekBar
+        android:id="@+id/seekBar1"
+        android:max="100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/relativeLayout1"
+        android:layout_marginTop="20dp"  />
 
     <TextView
         android:id="@+id/textView1"
@@ -109,5 +118,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/textView2"
         android:text="TextView" />
+
+   
 
 </RelativeLayout>
