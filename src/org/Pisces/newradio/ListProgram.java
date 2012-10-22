@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.Pisces.IO.BASE;
+import org.Pisces.IO.Downloader;
 import org.Pisces.XMLparser.ComparePrograms;
 import org.Pisces.XMLparser.GetXml;
 import org.Pisces.XMLparser.ProgramEntry;
@@ -22,9 +24,13 @@ import org.Pisces.XMLparser.PullProgramHandler;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,10 +38,9 @@ import android.widget.AdapterView.OnItemClickListener;
 public class ListProgram extends Activity{
 	
 	
-	TextView text = null;
-	Bundle bundle = null;
-	
-	final static String basePath = android.os.Environment.getExternalStorageDirectory()+"/.NewRadio/";
+	private TextView text = null;
+	private Bundle bundle = null;
+	private Button but1;
 	
     private ListView list;  
     private ArrayAdapter<ProgramEntry> adapter;  
@@ -50,11 +55,30 @@ public class ListProgram extends Activity{
 	        bundle = this.getIntent().getExtras();
 	        
 	        text = (TextView) findViewById(R.id.nameofprogram);
+	        but1 = (Button) findViewById(R.id.referProgram);
+	        
+	        but1.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					refersh(v);
+				}
+			});
+	        
 	        
 	        String tmp = bundle.getString("program_name")+"";
 	        text.setText(tmp);
 	        
 	        this.author = bundle.getString("Ename");
+	        
+	        File f = new File(BASE.basePath+author.trim()+".xml");
+			
+			if(!f.exists())
+			{
+				this.downXml(false);
+			}
+	        
 	        getinfo(author);
 	        
 	    }
@@ -62,13 +86,9 @@ public class ListProgram extends Activity{
 	 
 	 public void getinfo(String author)
 		{
-			InputStream programStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/"+author.trim()+".xml");
-			File f = new File(basePath+author.trim()+".xml");
+			//InputStream programStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/"+author.trim()+".xml");
+			InputStream programStream = GetXml.getXmlFromSDcard(BASE.basePath+author.trim()+".xml");
 			
-			if(!f.exists())
-			{
-			//	..
-			}
 			
 			//InputStream programStream = new GetXml().getXmlFromSDcard(basePath+author.trim()+".xml");
 	        
@@ -114,18 +134,37 @@ public class ListProgram extends Activity{
 			
 		}
 		
-		public void refersh(View v)
-		{
-			if(author==null) return;
-			programEntryList.clear();
-			this.getinfo(author);
-		}
 	 
 	 public void backtoAuthors(View v)
 	 {
 		 this.finish();
 	 }
 	 
+	 public void refersh(View v)
+	{
+		if(author==null) return;
+		downXml(true);
+		programEntryList.clear();
+		this.getinfo(author);
+	}
+		
+	private void downXml(boolean isRefersh)
+	{
+		File f= new File(BASE.basePath+author.trim()+".xml");
+		if(isRefersh||!f.exists())
+		{
+			if(f.exists())
+				f.delete();
+			Handler handler = new Handler();
+			Downloader down = new Downloader(BASE.baseUrl+author.trim()+".xml", BASE.basePath+author.trim()+".xml", handler);
+			down.start();
+			while(!down.isCompleted())
+			{
+				
+			}
+			Log.v("downXML",author.trim()+".xml");
+		}
+	}
 
 }
 

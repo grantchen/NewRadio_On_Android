@@ -1,13 +1,12 @@
 package org.Pisces.newradio;
 
 import org.Pisces.GUI.AuthorListView;
-import org.Pisces.IO.DBHelper;
-import org.Pisces.IO.Dao;
 import org.Pisces.IO.DirHelper;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -24,9 +23,9 @@ public class AuthorPage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.authorpage);
         
-        if(!DirHelper.isFileExist(".NewRadio"))
+        if(!DirHelper.isExist(".NewRadio/"))
         {
-        	DirHelper.creatSDDir(".NewRadio");
+        	DirHelper.createDir(".NewRadio/");
         }
         
         
@@ -67,11 +66,5 @@ public class AuthorPage extends Activity {
 		intent.setClass(this, About.class);
 		this.startActivity(intent);
     }
-    
-    public void refersh(View v)
-    {
-    	listView.refersh(v);
-    }
-    
-    
+     
 }

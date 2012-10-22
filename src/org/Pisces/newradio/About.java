@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 public class About extends Activity{
 	
-	
 	TextView text2 = null;
 	
 	 @Override

@@ -8,6 +8,9 @@ Author: lazydomino@163.com(pisces)
 
 package org.Pisces.XMLparser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -15,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import android.app.Activity;
 import android.util.Log;
 
 public class GetXml {
@@ -43,16 +47,17 @@ public class GetXml {
 			}
 			return inStream;
 	    }
-	    public InputStream getXmlFromSDcard(String PATH)
+	    public static InputStream getXmlFromSDcard(String PATH)
 	    {
-	    	if(!PATH.contains(".xml"))
-	    	{
-	    		Log.e("ERROR", "本地xml路径不合法！");
-	    	}
-	    	InputStream inStream = getClass().getClassLoader().getResourceAsStream(
-	    			PATH
-	    			);
-	    	return inStream;
+	    	File f = new File(PATH);
+	    	InputStream in = null;
+			try {
+				in = new FileInputStream(f);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+	    	return in;
 	    }
 }
 
