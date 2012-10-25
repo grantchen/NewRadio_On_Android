@@ -10,6 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:gravity="left"
+        android:text="textview2"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_alignBottom="@+id/textView2"
         android:layout_alignParentRight="true"
         android:gravity="right"
+        android:text="textview3"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <RelativeLayout
@@ -35,9 +37,9 @@
         android:id="@+id/seekBar1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/downLoad"
         android:max="100"
         android:visibility="gone" />
 
@@ -47,7 +49,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" >
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView2" >
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView4" />
     </ScrollView>
 
     <ImageView
@@ -58,17 +67,6 @@
         android:layout_centerHorizontal="true"
         android:maxHeight="@dimen/normal"
         android:maxWidth="@dimen/normal" />
-
-    <Button
-        android:id="@+id/deleteP"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
-        android:onClick="deleteProgramFiles"
-        android:text="删除" />
 
     <TextView
         android:id="@+id/textView1"
@@ -81,45 +79,52 @@
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/downLoad"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/deleteP"
-        android:layout_alignBottom="@+id/deleteP"
-        android:layout_marginRight="32dp"
-        android:layout_toLeftOf="@+id/imageView1"
-        android:onClick="download"
-        android:text="下载" />
-
     <ProgressBar
         android:id="@+id/progressBar1"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/downLoad" />
+        android:layout_alignParentRight="true" />
+
+    <Button
+        android:id="@+id/downLoad"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_alignTop="@+id/imageView1"
+        android:onClick="download"
+        android:text="下载" />
 
     <Button
         android:id="@+id/backTo"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/deleteP"
-        android:layout_alignBottom="@+id/deleteP"
-        android:layout_marginLeft="28dp"
-        android:layout_toRightOf="@+id/imageView1"
+        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignTop="@+id/imageView1"
         android:onClick="backtoProgramList"
         android:text="返回" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView2"
-        android:text="TextView" />
+    <Button
+        android:id="@+id/deleteP"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView1"
+        android:layout_alignLeft="@+id/downLoad"
+        android:onClick="deleteProgramFiles"
+        android:text="删除" />
+
+    <Button
+        android:id="@+id/button1"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/progressBar1"
+        android:layout_centerHorizontal="true"
+        android:text="Button" />
 
 </RelativeLayout>

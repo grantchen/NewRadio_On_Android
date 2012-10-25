@@ -10,18 +10,16 @@ package org.Pisces.IO;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
 	 
 public class Downloader  {
 	
@@ -34,12 +32,9 @@ public class Downloader  {
 	
 	//定义的一些常量变量，看名字就知道什么意思了
 	private static final int BUFFER_SIZE = 1024;
-	private long fileSize;
-	private int downloadedSize;
 	private String urlStr;
 	private String savePath;
 	private int downloadPercent = 0;
-	private long startTime,curTime;
 	private	boolean completed = false;
 	
 	private Handler handler;
@@ -59,36 +54,51 @@ public class Downloader  {
 				public void run() {
 					// TODO Auto-generated method stub
 					BufferedInputStream bis = null;
+					File file;
+					RandomAccessFile f = null;
 					byte[] buf = new byte[BUFFER_SIZE];
 				try {
-					File file = new File(savePath);
+					file = new File(savePath);
 					if(!file.exists())
 						file.createNewFile();
 					
-					RandomAccessFile f = new RandomAccessFile(file, "rw");
+					f = new RandomAccessFile(file, "rw");
 					URL url = new URL(urlStr);
 					
 					//Log.v("DEBUG","new URL");
 					
-					URLConnection con = url.openConnection();
-					Log.v("DEBUG", "openconnection");
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con.setConnectTimeout(500);
+					con.setReadTimeout(500);
+					Log.v("DOWN", "getLength");
 					
 					long length = con.getContentLength();
 					long hasdown = file.length();
 					
-					con = url.openConnection();
+					con = (HttpURLConnection) url.openConnection();
 					con.setAllowUserInteraction(true);
+					con.setConnectTimeout(500);
+					con.setReadTimeout(500);
+					
 					
 					if(length==hasdown)
 					{
 						completed = true;
 					}else
 					{
+						if(length==-1)
+						{
+							Log.e("DOWN","FUCK -1");
+							throw new SocketTimeoutException();
+						}
+						Log.v("DOWN", "startDown!");
 						con.setRequestProperty("Range", "bytes=" + hasdown + "-" + length);
 						Log.v("download from","bytes="+ ("bytes="
 								+ (hasdown + "-" + length)));
 						
 						f.seek(hasdown);
+						
+						con.connect();
 						
 						bis = new BufferedInputStream(con.getInputStream());
 						while (hasdown<length) {
@@ -116,17 +126,30 @@ public class Downloader  {
 						}
 						
 						completed = true;
-						bis.close();
-						f.close();
+						Log.v("DOWN","下载完成");
 						
 						Message msg = Message.obtain();
 						msg.what = 1;
 						handler.sendMessage(msg);
+						state = STOP;
+						bis.close();
 					}
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					Message msg = Message.obtain();
+					msg.what = 2;
+					handler.sendMessage(msg);
+					state = STOP;
+					Log.w("DOWN", "网络连接失败");
 					e.printStackTrace();
+				}finally{
+					try {
+						f.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 						
 				}
@@ -134,11 +157,11 @@ public class Downloader  {
 			t.start();
 			
 		}
-	       //获取下载百分比
-		public int getDownloadPercent(){
+	    
+		public int getDownloadPercent()
+		{
 			return this.downloadPercent;
 		}
-	   
 		
 	    //下载完成的标志
 		public boolean isCompleted(){
@@ -159,18 +182,23 @@ public class Downloader  {
 			Log.v("下载",urlStr);
 		}
 		
-		public long getFilesize()
+		public static long getFilesize(String urlStr,Handler h)
 		{
-			fileSize = 0;
+			long fileSize = 0;
 			URL url;
 			try {
 				url = new URL(urlStr);
 				URLConnection con = url.openConnection();
+				con.setConnectTimeout(500);
+				con.setReadTimeout(500);
 				fileSize = con.getContentLength();
-			} catch (MalformedURLException e) {
-				
 			} catch (IOException e)
 			{
+				Message msg = Message.obtain();
+				msg.what = 2;
+				h.sendMessage(msg);
+				Log.w("DOWN", "网络连接失败");
+				e.printStackTrace();
 			}
 			return fileSize;
 		}

@@ -3,10 +3,13 @@ package org.Pisces.newradio;
 import org.Pisces.GUI.AuthorListView;
 import org.Pisces.IO.DirHelper;
 
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.analytics.ReportPolicy;
+import com.umeng.update.UmengUpdateAgent;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -22,6 +25,11 @@ public class AuthorPage extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.authorpage);
+        MobclickAgent.onError(this);
+        MobclickAgent.updateOnlineConfig(this);
+        MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
+        UmengUpdateAgent.update(this);
         
         if(!DirHelper.isExist(".NewRadio/"))
         {
@@ -29,7 +37,7 @@ public class AuthorPage extends Activity {
         }
         
         
-        listView = new AuthorListView(this);
+        listView = new AuthorListView(AuthorPage.this);
         
     }
     
@@ -65,6 +73,18 @@ public class AuthorPage extends Activity {
     	Intent intent = new Intent();
 		intent.setClass(this, About.class);
 		this.startActivity(intent);
+    }
+    
+    
+    
+    //umeng统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
      
 }

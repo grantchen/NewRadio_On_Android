@@ -21,10 +21,14 @@ import org.Pisces.XMLparser.GetXml;
 import org.Pisces.XMLparser.ProgramEntry;
 import org.Pisces.XMLparser.PullProgramHandler;
 
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.analytics.ReportPolicy;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +37,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ListProgram extends Activity{
@@ -51,6 +56,9 @@ public class ListProgram extends Activity{
 	    public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.listprogram);
+	        MobclickAgent.onError(this);
+	        MobclickAgent.updateOnlineConfig(this);
+	        MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);
 	        
 	        bundle = this.getIntent().getExtras();
 	        
@@ -71,18 +79,9 @@ public class ListProgram extends Activity{
 	        text.setText(tmp);
 	        
 	        this.author = bundle.getString("Ename");
-	        
-	        File f = new File(BASE.basePath+author.trim()+".xml");
-			
-			if(!f.exists())
-			{
-				this.downXml(false);
-			}
-	        
-	        getinfo(author);
-	        
+
+	        downXml(false);
 	    }
-	 
 	 
 	 public void getinfo(String author)
 		{
@@ -144,27 +143,43 @@ public class ListProgram extends Activity{
 	{
 		if(author==null) return;
 		downXml(true);
-		programEntryList.clear();
-		this.getinfo(author);
 	}
 		
 	private void downXml(boolean isRefersh)
 	{
 		File f= new File(BASE.basePath+author.trim()+".xml");
-		if(isRefersh||!f.exists())
+		if(isRefersh||!f.exists()||f.length()==0)
 		{
 			if(f.exists())
 				f.delete();
-			Handler handler = new Handler();
 			Downloader down = new Downloader(BASE.baseUrl+author.trim()+".xml", BASE.basePath+author.trim()+".xml", handler);
 			down.start();
-			while(!down.isCompleted())
-			{
-				
-			}
-			Log.v("downXML",author.trim()+".xml");
-		}
+		}else
+			if(f.exists()&&f.length()>0) getinfo(author);
 	}
-
+	private Handler handler = new Handler()
+	 {
+		 public void handleMessage(Message msg) {
+			 if(msg.what==1)
+			 {
+				 if(programEntryList!=null)
+					 programEntryList.clear();
+				 getinfo(author);
+			 }else
+			if(msg.what==2)
+			{
+				Toast.makeText(ListProgram.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+			}
+		 }
+	 };
+	 //umeng统计
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }
 

@@ -10,7 +10,7 @@ package org.Pisces.IO;
 
 public class BASE {
 
-	public final static String baseUrl = "http://bchine.com/pisces/newradio/";
+	public final static String baseUrl = "http://211.87.227.116/newradio/";
 	public final static String basePath = "/mnt/sdcard/.NewRadio/";
 }
 

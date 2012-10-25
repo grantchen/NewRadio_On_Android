@@ -171,7 +171,7 @@ public class ProgramEntry {
 	@Override
 	public String toString()
 	{
-		return ID+" "+title+" "+subtitle;
+		return ID+". "+subtitle;
 	}
 		
 }

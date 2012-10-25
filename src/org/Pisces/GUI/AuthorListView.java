@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.Pisces.IO.BASE;
 import org.Pisces.IO.Downloader;
 import org.Pisces.XMLparser.AuthorEntry;
 import org.Pisces.XMLparser.GetXml;
@@ -19,30 +20,30 @@ import org.Pisces.XMLparser.PullAuthorHandler;
 import org.Pisces.newradio.AuthorPage;
 import org.Pisces.newradio.ListProgram;
 import org.Pisces.newradio.R;
+import org.Pisces.newradio.RecordVoice;
+
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class AuthorListView {
-
-	final static String basePath = "/mnt/sdcard/.NewRadio/";
-	final static String baseUrl = "http://bchine.com/pisces/newradio/";
 	
     private ListView list;  
     private ArrayAdapter<AuthorEntry> adapter;  
     private ArrayList<AuthorEntry> authorEntryList;
     private Activity father;
-    private Button but2;
+    private Button but1,but2;
     
     
 	public AuthorListView(AuthorPage father)
@@ -50,6 +51,17 @@ public class AuthorListView {
 		super();
 		this.father = father;
 		but2 = (Button) father.findViewById(R.id.button2);
+		but1 = (Button) father.findViewById(R.id.button1);
+		
+		but1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToHumming();
+				
+			}
+		});
 		
 		but2.setOnClickListener(new OnClickListener() {
 			
@@ -61,14 +73,12 @@ public class AuthorListView {
 		});
 		
 		downXml(false);
-		
-		getinfo();
 	}
 	
 	public void getinfo()
 	{
 		//InputStream authorStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/authors.xml");
-		InputStream authorStream = GetXml.getXmlFromSDcard(basePath+"authors.xml");
+		InputStream authorStream = GetXml.getXmlFromSDcard(BASE.basePath+"authors.xml");
         
         PullAuthorHandler pullHandler = new PullAuthorHandler();
         
@@ -104,30 +114,44 @@ public class AuthorListView {
 		list.setOnItemClickListener(lis1);
 	}
 	
+	public void changeToHumming()
+	{
+		Intent intent = new Intent();
+		intent.setClass(father, RecordVoice.class);
+		
+		father.startActivity(intent);
+	}
 	public void refersh(View v)
 	{
 		downXml(true);
-		authorEntryList.clear();
-		this.getinfo();
 	}
 	
 	private void downXml(boolean isRefersh)
 	{
-		File f= new File(basePath+"authors.xml");
-		if(isRefersh||!f.exists())
+		File f= new File(BASE.basePath+"authors.xml");
+		if(isRefersh||!f.exists()||f.length()==0)
 		{
 			if(f.exists())
 				f.delete();
-			Handler handler = new Handler();
-			Downloader down = new Downloader(baseUrl+"authors.xml", basePath+"authors.xml", handler);
+			Downloader down = new Downloader(BASE.baseUrl+"authors.xml", BASE.basePath+"authors.xml", handler);
 			down.start();
-			while(!down.isCompleted())
-			{
-				
-			}
-			Log.v("downXML","authors.xml");
-		}
+		}else
+		if(f.exists()&&f.length()>0) getinfo();
 	}
+	private Handler handler = new Handler(){
+		 public void handleMessage(Message msg) {
+			 if(msg.what==1)
+			 {
+				if(authorEntryList!=null)
+					authorEntryList.clear();
+				getinfo();
+			 }else
+			 if(msg.what==2)
+			 {
+				 Toast.makeText(father, "网络连接失败！", Toast.LENGTH_SHORT).show();
+			 }
+		 }
+	};
 }
 
 

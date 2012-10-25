@@ -15,8 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,8 +22,10 @@ import org.Pisces.IO.BASE;
 import org.Pisces.IO.DirHelper;
 import org.Pisces.IO.Downloader;
 
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.analytics.ReportPolicy;
+
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -94,9 +93,18 @@ public class ProgramView extends Activity {
 		
 		try{
 	        super.onCreate(savedInstanceState);
-	        setContentView(R.layout.programview);
-	     
+	        setContentView(R.layout.programview2);
+	        MobclickAgent.onError(this);
+	        MobclickAgent.updateOnlineConfig(this);
+	        MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);
+	        
 	        bundle = this.getIntent().getExtras();
+	        
+	        //先判断文件夹是否存在，不存在则建立
+	        if(!DirHelper.isExist(".NewRadio/"+bundle.getString("author")))
+	        {
+	        	DirHelper.createDir(".NewRadio/"+bundle.getString("author"));
+	        }
 	        
 	        source = bundle.getString("source");
 	        sourceImg = bundle.getString("img");
@@ -138,18 +146,7 @@ public class ProgramView extends Activity {
 			bar.setVisibility(View.VISIBLE);
 	        
 			//显示图片
-			Downloader downImg = new Downloader(BASE.baseUrl+sourceImg, BASE.basePath+sourceImg, imgHandler);
-			if(!img.exists())
-			{
-				downImg.start();
-			}else
-			{
-				if(downImg.getFilesize()!=img.length())
-				{
-					downImg.start();
-				}else
-				drawImg();
-			}
+			drawImg();
 			
 			
 	        f = new File(BASE.basePath+source);
@@ -240,6 +237,7 @@ public class ProgramView extends Activity {
 				int length = msg.arg1;
 				bar.setProgress(length);
 			}else
+			if(msg.what==1)
 			{
 				Toast.makeText(ProgramView.this, "节目下载完成！", Toast.LENGTH_SHORT).show();
 				try {
@@ -254,6 +252,16 @@ public class ProgramView extends Activity {
 				
 				but2.setText("删除");
 				but2.setOnClickListener(delete);
+			}else
+			if(msg.what==2)
+			{
+				
+				but1.setText("下载");
+				but1.setOnClickListener(down);
+				
+				but2.setText("删除");
+				but2.setOnClickListener(delete);
+				Toast.makeText(ProgramView.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
 			}
 			
 			
@@ -293,23 +301,11 @@ public class ProgramView extends Activity {
     	}
     };
     
-    private Handler imgHandler = new Handler(){
-    	@Override
-    	public void handleMessage(Message msg){
-    		if(msg.what!=0)
-    		{
-    			drawImg();
-    		}
-    	}
-    };
     /*
      * 显示图片
      */
     private void drawImg()
     {
-    	if(img==null||!img.exists()) return;
-    	
-    	
     	//imgV.setScaleType(ScaleType.CENTER_INSIDE);
     	//imgV.setAdjustViewBounds(true);
     	imgV.setMaxHeight(70);
@@ -317,15 +313,42 @@ public class ProgramView extends Activity {
     	imgV.setMinimumHeight(70);
     	imgV.setMinimumWidth(70);
     	
-    	InputStream imgIn = null;
-		try {
-			imgIn = new FileInputStream(img);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Drawable drawImg = BitmapDrawable.createFromStream(imgIn, sourceImg);
-		imgV.setImageDrawable(drawImg);
+    	if(!img.exists()||img.length()==0)
+    	{
+    		Handler imgH = new Handler(){
+    			public void handleMessage(Message msg){
+    				if(msg.what==1)
+    				{
+    					InputStream imgIn = null;
+    					try {
+    						imgIn = new FileInputStream(img);
+    					} catch (FileNotFoundException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+    					Drawable drawImg = BitmapDrawable.createFromStream(imgIn, sourceImg);
+    					imgV.setImageDrawable(drawImg);
+    				}else
+    				if(msg.what==2)
+    				{
+    					Toast.makeText(ProgramView.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+    				}
+    			}
+    		};
+    		Downloader downImg = new Downloader(BASE.baseUrl+sourceImg, BASE.basePath+sourceImg, imgH);
+    		downImg.start();
+    		
+    	}else{
+	    	InputStream imgIn = null;
+			try {
+				imgIn = new FileInputStream(img);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Drawable drawImg = BitmapDrawable.createFromStream(imgIn, sourceImg);
+			imgV.setImageDrawable(drawImg);
+    	}
     }
     /*
 	 * 删除文件
@@ -363,12 +386,6 @@ public class ProgramView extends Activity {
 		
 		if (downsound.isDownloading())
 			return;
-		
-		//先判断文件夹是否存在，不存在则建立
-		if(!DirHelper.isExist(".NewRadio/"+bundle.getString("author")))
-		{
-			DirHelper.createDir(".NewRadio/"+bundle.getString("author"));
-		}
 		
 		if(downsound==null)
 			downsound = new Downloader(BASE.baseUrl+source,BASE.basePath+source,mHandler);
@@ -483,6 +500,8 @@ public class ProgramView extends Activity {
             }
             mp.start();
 			
+            Log.v("PLAY",BASE.basePath+source);
+            
             Playing = BASE.basePath+source;
             
 		} catch (IllegalArgumentException e) {
@@ -606,7 +625,7 @@ public class ProgramView extends Activity {
 	private void startProgressUpdate(){
     	//开辟Thread 用于定期刷新SeekBar
 		//if(dThread==null)
-		dThread = new DelayThread(100);
+		dThread = new DelayThread(500);
     	dThread.start();
     	seekbarIsChange = false;
     }
@@ -635,5 +654,15 @@ public class DelayThread extends Thread {
 			pHandle.sendEmptyMessage(0);
 		}
 	}
+}
+
+//umeng统计
+public void onResume() {
+    super.onResume();
+    MobclickAgent.onResume(this);
+}
+public void onPause() {
+    super.onPause();
+    MobclickAgent.onPause(this);
 }
 }

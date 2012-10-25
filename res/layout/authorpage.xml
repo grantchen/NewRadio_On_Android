@@ -31,7 +31,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="26dp"
                 android:onClick="gotoOneProgram"
-                android:text="节目" />
+                android:text="搜索" />
 
             <Button
                 android:id="@+id/button3"

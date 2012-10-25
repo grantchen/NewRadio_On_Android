@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/referProgram"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/nameofprogram" >
+        android:layout_below="@+id/nameofprogram"
+         >
 
     </ListView>
 
