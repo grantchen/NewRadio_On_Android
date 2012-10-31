@@ -55,7 +55,9 @@ public class Downloader  {
 					// TODO Auto-generated method stub
 					BufferedInputStream bis = null;
 					File file;
+					HttpURLConnection con = null;
 					RandomAccessFile f = null;
+					URL url;
 					byte[] buf = new byte[BUFFER_SIZE];
 				try {
 					file = new File(savePath);
@@ -63,16 +65,16 @@ public class Downloader  {
 						file.createNewFile();
 					
 					f = new RandomAccessFile(file, "rw");
-					URL url = new URL(urlStr);
+					url = new URL(urlStr);
 					
 					//Log.v("DEBUG","new URL");
 					
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
+					con = (HttpURLConnection) url.openConnection();
 					con.setConnectTimeout(500);
 					con.setReadTimeout(500);
 					Log.v("DOWN", "getLength");
 					
-					long length = con.getContentLength();
+					long length = getFilesize(urlStr, handler);
 					long hasdown = file.length();
 					
 					con = (HttpURLConnection) url.openConnection();
@@ -137,6 +139,7 @@ public class Downloader  {
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					
 					Message msg = Message.obtain();
 					msg.what = 2;
 					handler.sendMessage(msg);
@@ -145,7 +148,13 @@ public class Downloader  {
 					e.printStackTrace();
 				}finally{
 					try {
-						f.close();
+						state = STOP;
+						if(bis!=null)
+							bis.close();
+						if(f!=null)
+							f.close();
+						if(con!=null)
+							con.disconnect();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -198,7 +207,7 @@ public class Downloader  {
 				msg.what = 2;
 				h.sendMessage(msg);
 				Log.w("DOWN", "网络连接失败");
-				e.printStackTrace();
+			//	e.printStackTrace();
 			}
 			return fileSize;
 		}

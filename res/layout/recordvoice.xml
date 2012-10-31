@@ -52,6 +52,6 @@
         android:layout_below="@+id/recordbar"
         android:layout_marginRight="16dp"
         android:layout_marginTop="14dp"
-        android:text="TextView" />
+        android:text="已经录制: 0 s" />
 
 </RelativeLayout>

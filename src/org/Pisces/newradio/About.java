@@ -27,7 +27,8 @@ import android.widget.Toast;
 
 public class About extends Activity{
 	
-	WebView web = null;
+	private WebView web = null;
+	private Handler handler;
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
@@ -39,7 +40,7 @@ public class About extends Activity{
 	        web = (WebView) findViewById(R.id.webView1);
 	        
 	        File f = new File(BASE.basePath+"about.html");
-	        Handler handler = new Handler(){
+	        handler = new Handler(){
         		public void handleMessage(Message msg){
         			if(msg.what==1)
         			{
@@ -51,16 +52,16 @@ public class About extends Activity{
         			}
         		}
         	};
-	        if(!f.exists()||f.length()!=Downloader.getFilesize(BASE.baseUrl+"about.html",handler))
+//	        if(!f.exists()||f.length()!=Downloader.getFilesize(BASE.baseUrl+"about.html",handler))
 	        {
 	        	
 	        	if(f.exists()) f.delete();
 	        	Downloader down = new Downloader(BASE.baseUrl+"about.html", BASE.basePath+"about.html", handler);
 	        	down.start();
-	        }else
-	        {
-	        	web.loadUrl("file://"+BASE.basePath+"about.html");
-	        }
+	        }//else
+//	        {
+//	        	web.loadUrl("file://"+BASE.basePath+"about.html");
+//	        }
 	        
 	    }
 	 

@@ -13,16 +13,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
 
+import org.Pisces.IO.BASE;
+import org.Pisces.IO.Downloader;
+import org.Pisces.XMLparser.ComparePrograms;
+import org.Pisces.XMLparser.GetXml;
+import org.Pisces.XMLparser.ProgramEntry;
+import org.Pisces.XMLparser.PullProgramHandler;
 import org.Pisces.newradio.R;
 
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -34,10 +44,14 @@ import android.sax.StartElementListener;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 
 public class RecordVoice extends Activity{
@@ -55,6 +69,19 @@ public class RecordVoice extends Activity{
 	private Handler handle = null;
 	private TextView text = null;
 	private Handler sendOk;
+	private Handler h = new Handler()
+ 	{
+ 		public void handleMessage(Message msg)
+ 		{
+ 			if(msg.what==1)
+ 				getinfo();
+ 		}
+ 	};;
+	
+	
+	 private ListView list;  
+	 private ArrayAdapter<ProgramEntry> adapter;  
+	 private ArrayList<ProgramEntry> programEntryList;
 	
 	private String AudioName = "/mnt/sdcard/.NewRadio/tmp.mp4";
 	
@@ -78,6 +105,9 @@ public class RecordVoice extends Activity{
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			
+			if(programEntryList!=null)
+				programEntryList.clear();
 			rec.setText("开始录音");
 			rec.setOnClickListener(start);
 			status = STOP;
@@ -144,7 +174,98 @@ public class RecordVoice extends Activity{
 	public void receieve()
 	{
 		
+		
+		
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					
+					Thread.sleep(3000);
+					
+					File f = new File(BASE.basePath+"res.xml");
+
+					downXml(true);
+//					while(!f.exists())
+//					{
+//						 downXml(true);
+//						 Thread.sleep(3000);
+//					}
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+				}
+				
+			}
+		});
+		
+		t.start();
 	}
+	 public void getinfo()
+		{
+			//InputStream programStream = GetXml.getXmlFromInternet(BASE.baseUrl+"res.xml");
+		 
+			InputStream programStream = GetXml.getXmlFromSDcard(BASE.basePath+"res.xml");
+			
+			
+			//InputStream programStream = new GetXml().getXmlFromSDcard(basePath+author.trim()+".xml");
+	        
+	        PullProgramHandler pullHandler = new PullProgramHandler();
+	        
+	        programEntryList = pullHandler.parse(programStream);
+	        
+	        Collections.sort(programEntryList,new ComparePrograms());
+	        
+	       
+	        adapter = new ArrayAdapter<ProgramEntry>(this,android.R.layout.simple_list_item_1, programEntryList);
+	        list.setAdapter(adapter);
+	        
+	        OnItemClickListener lis1 = new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+						long arg3) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent();
+					intent.setClass(RecordVoice.this, ProgramView.class);
+					Bundle bundle = new Bundle();
+
+					ProgramEntry selected = programEntryList.get(arg2);
+					
+					bundle.putString("title", selected.getTitle());
+					bundle.putLong("pushtime", selected.getPushtime());
+					bundle.putLong("how_long", selected.getHow_long());
+					bundle.putString("subtitle", selected.getSubtitle());
+					bundle.putString("comment", selected.getComment());
+					bundle.putString("source", selected.getSource());
+					bundle.putString("img", selected.getImg());
+					bundle.putInt("ID", selected.getID());
+					bundle.putLong("filesize", selected.getFilesize());
+					bundle.putString("author", selected.getAuthor());
+					
+					
+					intent.putExtras(bundle);
+					startActivity(intent);
+				}
+			};
+			list.setOnItemClickListener(lis1);
+			
+		}
+	 private void downXml(boolean isRefersh)
+		{
+		 	
+			File f= new File(BASE.basePath+"res.xml");
+			if(isRefersh||!f.exists()||f.length()==0)
+			{
+				if(f.exists())
+					f.delete();
+				Downloader down = new Downloader(BASE.baseUrl+"res.xml", BASE.basePath+"res.xml",h);
+				down.start();
+			}else
+				if(f.exists()&&f.length()>0) getinfo();
+		}
 	
 	private void startRecord()
 	{
@@ -216,6 +337,8 @@ public class RecordVoice extends Activity{
 	        rec = (Button) findViewById(R.id.record);
 	        rec.setOnClickListener(start);
 	        text = (TextView) findViewById(R.id.rectime);
+	        
+	        list = (ListView) findViewById(R.id.receieveList);
 	        
 	    }
 

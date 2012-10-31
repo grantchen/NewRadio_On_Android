@@ -355,9 +355,10 @@ public class ProgramView extends Activity {
 	 */
 	public void deleteProgramFiles(View v)
 	{
-		if(f.exists()&&f.length()!=filesize)
+		if(f.exists()&&f.length()>0&&f.length()<filesize)
 		{
 			Toast.makeText(this, "未下载完成的文件删除完毕！！", Toast.LENGTH_SHORT).show();
+			f.delete();
 			return;
 		}
 		
@@ -387,8 +388,8 @@ public class ProgramView extends Activity {
 		if (downsound.isDownloading())
 			return;
 		
-		if(downsound==null)
-			downsound = new Downloader(BASE.baseUrl+source,BASE.basePath+source,mHandler);
+		//if(downsound==null)
+		downsound = new Downloader(BASE.baseUrl+source,BASE.basePath+source,mHandler);
 		
 		Log.v("Debug", "download "+source);
 		
