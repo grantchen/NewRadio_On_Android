@@ -8,54 +8,64 @@ Author: lazydomino@163.com(pisces)
 
 package org.Pisces.XMLparser;
 
-import java.util.Date;
 
 public class ProgramEntry {
 	
 	private int ID;
-	private Date date;
 	private String title;
-	private String subtitle;
-	private long pushtime;
+	private String name;
+	private String pushtime;
 	private long how_long;
 	private String comment;
-	private String author;
+	private int DJ;
 	private String img;
 	private String source;
-	private long filesize;
+	private int Album;
+	private String AlbumName;
 	
+	public String getAlbumName() {
+		return AlbumName;
+	}
+
+
+
+
+	public void setAlbumName(String albumName) {
+		AlbumName = albumName;
+	}
+
+
+
+
 	public ProgramEntry()
 	{
 		super();
 		ID = 0;
 		this.title = "";
-		this.subtitle = "";
-		this.pushtime = 0;
+		this.name = "";
+		this.pushtime = "";
 		this.how_long = 0;
 		this.comment = "";
-		this.author = "";
+		this.DJ = 0;
 		this.img = "";
 		this.source = "";
-		this.filesize = 0;
 	}
 	
 	
-	public ProgramEntry(int iD, Date date, String title, String subtitle,
-			long pushtime, long how_long, String comment, String author,
-			String img, String source, long filesize) {
-		super();
-		ID = iD;
-		this.date = date;
-		this.title = title;
-		this.subtitle = subtitle;
-		this.pushtime = pushtime;
-		this.how_long = how_long;
-		this.comment = comment;
-		this.author = author;
-		this.img = img;
-		this.source = source;
-		this.filesize = filesize;
+	
+
+	public int getAlbum() {
+		return Album;
 	}
+
+
+
+
+	public void setAlbum(int album) {
+		Album = album;
+	}
+
+
 
 
 	public int getID() {
@@ -63,19 +73,13 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setID(int iD) {
 		ID = iD;
 	}
 
 
-	public Date getDate() {
-		return date;
-	}
-
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
 
 
 	public String getTitle() {
@@ -83,29 +87,41 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
 
-	public String getSubtitle() {
-		return subtitle;
+
+
+	public String getName() {
+		return name;
 	}
 
 
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 
-	public long getPushtime() {
+
+
+	public String getPushtime() {
 		return pushtime;
 	}
 
 
-	public void setPushtime(long pushtime) {
+
+
+	public void setPushtime(String pushtime) {
 		this.pushtime = pushtime;
 	}
+
+
 
 
 	public long getHow_long() {
@@ -113,9 +129,13 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setHow_long(long how_long) {
 		this.how_long = how_long;
 	}
+
+
 
 
 	public String getComment() {
@@ -123,19 +143,27 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
 
 
-	public String getAuthor() {
-		return author;
+
+
+	public int getDJ() {
+		return DJ;
 	}
 
 
-	public void setAuthor(String author) {
-		this.author = author;
+
+
+	public void setDJ(int dJ) {
+		DJ = dJ;
 	}
+
+
 
 
 	public String getImg() {
@@ -143,9 +171,13 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setImg(String img) {
 		this.img = img;
 	}
+
+
 
 
 	public String getSource() {
@@ -153,25 +185,36 @@ public class ProgramEntry {
 	}
 
 
+
+
 	public void setSource(String source) {
 		this.source = source;
 	}
 
 
-	public long getFilesize() {
-		return filesize;
+
+
+	public ProgramEntry(int iD, String title, String name, String pushtime,
+			long how_long, String comment, int dJ, String img, String source) {
+		super();
+		ID = iD;
+		this.title = title;
+		this.name = name;
+		this.pushtime = pushtime;
+		this.how_long = how_long;
+		this.comment = comment;
+		DJ = dJ;
+		this.img = img;
+		this.source = source;
 	}
 
 
-	public void setFilesize(long filesize) {
-		this.filesize = filesize;
-	}
 
 
 	@Override
 	public String toString()
 	{
-		return ID+". "+subtitle;
+		return title+"";
 	}
 		
 }

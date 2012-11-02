@@ -21,23 +21,19 @@ import android.util.Xml;
 public class PullProgramHandler {
 	
 	//解析用到的tag
-	private String _entryname = "program";
-	private String _entryID = "id";
-	private String _entrytile = "title";
-	private String _entrysubtitle = "subtitle";
-	private String _entrypushtime = "pushtime";
-	private String _entryhow_long = "how_long";
-	private String _entrycomment = "comment";
-	private String _entryimg = "img";
-	private String _entrysource = "source";
-	private String _author = "author";
-	private String _filesize = "filesize";
+	private String _start = "dict";
+	
 	//用于保存xml解析获取的结果 
 	private ArrayList<ProgramEntry> programEntryList = null;
 	private ProgramEntry programEntry = null;
 	private Boolean startEntryElementFlag = false;
-	
+	private Boolean startProgram = false;
+	private String cmd = "@";
+	private int DJ = 0;
     //解析xml数据 
+	
+	
+	
 	public ArrayList<ProgramEntry> parse(InputStream inStream)
 	{
 		try {
@@ -60,80 +56,81 @@ public class PullProgramHandler {
             		case XmlPullParser.START_TAG:
             		{
             			localName = xmlPullParser.getName();
-            			if(localName.equalsIgnoreCase(_entryname))
+            			if(localName.equalsIgnoreCase("array"))
+            			{
+            				startProgram = true;
+            			}else
+            			if(startProgram&&localName.equalsIgnoreCase(_start))
             			{
             				programEntry = new ProgramEntry();
             				startEntryElementFlag = true;
             			}else
             			if(startEntryElementFlag)
             			{
-            				String currentData = null;
-            				if(localName.equalsIgnoreCase(_author))
+            				if(cmd.equals("@"))
+            					cmd = xmlPullParser.nextText();
+            				else
             				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setAuthor(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entryID))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					int ID = Integer.parseInt(currentData.trim());
-            					programEntry.setID(ID);
-            				}else
-            				if(localName.equalsIgnoreCase(_entrycomment))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setComment(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entryhow_long))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					long how_long = Long.parseLong(currentData.trim());
-            					programEntry.setHow_long(how_long);
-            				}else
-            				if(localName.equalsIgnoreCase(_entryimg))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setImg(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entrypushtime))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					long pushtime = Long.parseLong(currentData.trim());
-            					programEntry.setPushtime(pushtime);
-            				}else
-            				if(localName.equalsIgnoreCase(_entrysubtitle))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setSubtitle(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entrytile))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setTitle(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entryimg))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setImg(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_entrysource))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setSource(currentData.trim());
-            				}else
-            				if(localName.equalsIgnoreCase(_filesize))
-            				{
-            					currentData = xmlPullParser.nextText();
-            					programEntry.setFilesize(Long.parseLong(currentData.trim()));
+            					String str = xmlPullParser.nextText();
+            					
+            					if(cmd.equals("ID"))
+            					{
+            						int ID = Integer.parseInt(str);
+            						programEntry.setID(ID);
+            					}else
+            					if(cmd.equals("Name"))
+            					{
+            						programEntry.setName(str);
+            					}else
+            					if(cmd.equals("Title"))
+            					{
+            						programEntry.setTitle(str);
+            					}else
+            					if(cmd.endsWith("ReleaseDate"))
+            					{
+            						programEntry.setPushtime(str);
+            					}else
+            					if(cmd.equals("Length"))
+            					{
+            						long time = Long.parseLong(str);
+            						programEntry.setHow_long(time);
+            					}else
+            					if(cmd.equals("Description"))
+            					{
+            						programEntry.setComment(str);
+            					}else
+            					if(cmd.equals("ProgramURL"))
+            					{
+            						programEntry.setSource(str);
+            					}else
+            					if(cmd.equals("ImageURL"))
+            					{
+            						programEntry.setImg(str);
+            					}else
+            					if(cmd.equals("DJ"))
+            					{
+            						int dj = Integer.parseInt(str);
+            						programEntry.setDJ(dj);
+            					}else
+            					if(cmd.equals("Album"))
+            					{
+            						int t = Integer.parseInt(str);
+            						programEntry.setAlbum(t);
+            					}
+            					
+            					cmd = "@"; 
             				}
+            				
             			}
+            			
             		};break;
             		case XmlPullParser.END_TAG:
             		{
             			localName = xmlPullParser.getName();
-            			if((localName.equalsIgnoreCase(_entryname))&&startEntryElementFlag)
+            			if((localName.equalsIgnoreCase("dict"))&&startEntryElementFlag)
             			{
-            				programEntryList.add(programEntry);
+            				if(programEntry.getDJ()==DJ)
+            					programEntryList.add(programEntry);
             				startEntryElementFlag = false;
             			}
             		};break;
@@ -152,6 +149,13 @@ public class PullProgramHandler {
 			e2.printStackTrace();
 		}
 		return programEntryList;
+	}
+
+
+
+	public PullProgramHandler(int dJ) {
+		super();
+		DJ = dJ;
 	}
 }
 

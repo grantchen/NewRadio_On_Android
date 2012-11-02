@@ -29,6 +29,7 @@ public class Downloader  {
 	private final int DOWN = 1;
 	private int state;
 	
+	private final static int DELY = 6000;
 	
 	//定义的一些常量变量，看名字就知道什么意思了
 	private static final int BUFFER_SIZE = 1024;
@@ -70,8 +71,8 @@ public class Downloader  {
 					//Log.v("DEBUG","new URL");
 					
 					con = (HttpURLConnection) url.openConnection();
-					con.setConnectTimeout(500);
-					con.setReadTimeout(500);
+					con.setConnectTimeout(DELY);
+					con.setReadTimeout(DELY);
 					Log.v("DOWN", "getLength");
 					
 					long length = getFilesize(urlStr, handler);
@@ -79,8 +80,8 @@ public class Downloader  {
 					
 					con = (HttpURLConnection) url.openConnection();
 					con.setAllowUserInteraction(true);
-					con.setConnectTimeout(500);
-					con.setReadTimeout(500);
+					con.setConnectTimeout(DELY);
+					con.setReadTimeout(DELY);
 					
 					
 					if(length==hasdown)
@@ -198,8 +199,8 @@ public class Downloader  {
 			try {
 				url = new URL(urlStr);
 				URLConnection con = url.openConnection();
-				con.setConnectTimeout(500);
-				con.setReadTimeout(500);
+				con.setConnectTimeout(DELY);
+				con.setReadTimeout(DELY);
 				fileSize = con.getContentLength();
 			} catch (IOException e)
 			{

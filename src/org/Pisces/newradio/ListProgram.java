@@ -16,6 +16,7 @@ import java.util.Collections;
 
 import org.Pisces.IO.BASE;
 import org.Pisces.IO.Downloader;
+import org.Pisces.XMLparser.AuthorEntry;
 import org.Pisces.XMLparser.ComparePrograms;
 import org.Pisces.XMLparser.GetXml;
 import org.Pisces.XMLparser.ProgramEntry;
@@ -50,7 +51,9 @@ public class ListProgram extends Activity{
     private ListView list;  
     private ArrayAdapter<ProgramEntry> adapter;  
     private ArrayList<ProgramEntry> programEntryList;
-    private String author = null; 
+    
+    private int DJ;
+    
     
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {
@@ -75,23 +78,22 @@ public class ListProgram extends Activity{
 			});
 	        
 	        
-	        String tmp = bundle.getString("program_name")+"";
-	        text.setText(tmp);
-	        
-	        this.author = bundle.getString("Ename");
+	        this.DJ = bundle.getInt("DJ");
+	        text.setText(AuthorEntry.getAlbum(DJ));
 
 	        downXml(false);
 	    }
 	 
-	 public void getinfo(String author)
+	 public void getinfo(int DJ)
 		{
 			//InputStream programStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/"+author.trim()+".xml");
-			InputStream programStream = GetXml.getXmlFromSDcard(BASE.basePath+author.trim()+".xml");
+			InputStream programStream = GetXml.getXmlFromSDcard(BASE.basePath+"Podcast.aspx");
 			
 			
 			//InputStream programStream = new GetXml().getXmlFromSDcard(basePath+author.trim()+".xml");
 	        
-	        PullProgramHandler pullHandler = new PullProgramHandler();
+	        PullProgramHandler pullHandler = new PullProgramHandler(DJ);
+	        
 	        
 	        programEntryList = pullHandler.parse(programStream);
 	        
@@ -114,15 +116,14 @@ public class ListProgram extends Activity{
 					ProgramEntry selected = programEntryList.get(arg2);
 					
 					bundle.putString("title", selected.getTitle());
-					bundle.putLong("pushtime", selected.getPushtime());
+					bundle.putString("pushtime", selected.getPushtime());
 					bundle.putLong("how_long", selected.getHow_long());
-					bundle.putString("subtitle", selected.getSubtitle());
+					bundle.putString("name", selected.getName());
 					bundle.putString("comment", selected.getComment());
 					bundle.putString("source", selected.getSource());
 					bundle.putString("img", selected.getImg());
 					bundle.putInt("ID", selected.getID());
-					bundle.putLong("filesize", selected.getFilesize());
-					bundle.putString("author", selected.getAuthor());
+					bundle.putInt("DJ", selected.getDJ());
 					
 					
 					intent.putExtras(bundle);
@@ -141,21 +142,20 @@ public class ListProgram extends Activity{
 	 
 	 public void refersh(View v)
 	{
-		if(author==null) return;
 		downXml(true);
 	}
 		
 	private void downXml(boolean isRefersh)
 	{
-		File f= new File(BASE.basePath+author.trim()+".xml");
+		File f= new File(BASE.basePath+"Podcast.aspx");
 		if(isRefersh||!f.exists()||f.length()==0)
 		{
 			if(f.exists())
 				f.delete();
-			Downloader down = new Downloader(BASE.baseUrl+author.trim()+".xml", BASE.basePath+author.trim()+".xml", handler);
+			Downloader down = new Downloader(BASE.baseUrl+"Podcast.aspx", BASE.basePath+"Podcast.aspx", handler);
 			down.start();
 		}else
-			if(f.exists()&&f.length()>0) getinfo(author);
+			if(f.exists()&&f.length()>0) getinfo(DJ);
 	}
 	private Handler handler = new Handler()
 	 {
@@ -164,7 +164,7 @@ public class ListProgram extends Activity{
 			 {
 				 if(programEntryList!=null)
 					 programEntryList.clear();
-				 getinfo(author);
+				 getinfo(DJ);
 			 }else
 			if(msg.what==2)
 			{

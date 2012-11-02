@@ -23,7 +23,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 public class About extends Activity{
 	
@@ -48,20 +47,22 @@ public class About extends Activity{
         			}else
         			if(msg.what==2)
         			{
-        				Toast.makeText(About.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+        				
+        				//web.loadUrl(Resources.cla.)
+        				//Toast.makeText(About.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
         			}
         		}
         	};
-//	        if(!f.exists()||f.length()!=Downloader.getFilesize(BASE.baseUrl+"about.html",handler))
+	        if(!f.exists()||f.length()!=Downloader.getFilesize(BASE.AboutPath+"about.html",handler))
 	        {
 	        	
 	        	if(f.exists()) f.delete();
-	        	Downloader down = new Downloader(BASE.baseUrl+"about.html", BASE.basePath+"about.html", handler);
+	        	Downloader down = new Downloader(BASE.AboutPath+"about.html", BASE.basePath+"about.html", handler);
 	        	down.start();
-	        }//else
-//	        {
-//	        	web.loadUrl("file://"+BASE.basePath+"about.html");
-//	        }
+	        }else
+	        {
+	        	web.loadUrl("file://"+BASE.basePath+"about.html");
+	        }
 	        
 	    }
 	 

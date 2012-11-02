@@ -21,6 +21,8 @@ import java.util.Date;
 import org.Pisces.IO.BASE;
 import org.Pisces.IO.DirHelper;
 import org.Pisces.IO.Downloader;
+import org.Pisces.XMLparser.AuthorEntry;
+import org.Pisces.newradio.R.id;
 
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
@@ -65,10 +67,10 @@ public class ProgramView extends Activity {
 	private OnClickListener delete;//删除文件
 	private OnClickListener deleteOndownloading;
 	
-	private File f ;
+	private File f;
 	private File fileFlag;
-	private long filesize;
 	private long how_longP;
+	private int ID;
 	private Downloader downsound;//下载器
 	
 	private static MediaPlayer mp = null;
@@ -101,25 +103,31 @@ public class ProgramView extends Activity {
 	        bundle = this.getIntent().getExtras();
 	        
 	        //先判断文件夹是否存在，不存在则建立
-	        if(!DirHelper.isExist(".NewRadio/"+bundle.getString("author")))
+	        if(!DirHelper.isExist(".NewRadio/"+"programs"))
 	        {
-	        	DirHelper.createDir(".NewRadio/"+bundle.getString("author"));
+	        	DirHelper.createDir(".NewRadio/"+"programs");
+	        }
+	        if(!DirHelper.isExist(".NewRadio/"+"cache"))
+	        {
+	        	DirHelper.createDir(".NewRadio/"+"cache");
 	        }
 	        
+	        ID = bundle.getInt("ID");
 	        source = bundle.getString("source");
 	        sourceImg = bundle.getString("img");
-	        filesize = bundle.getLong("filesize");
 	        how_longP = bundle.getLong("how_long");
 	        
 	        TextView subtitle = (TextView) findViewById(R.id.textView1);
-	        subtitle.setText(bundle.getString("subtitle"));
+	        subtitle.setText(bundle.getString("title"));
 	        
 	        TextView pushtime = (TextView) findViewById(R.id.textView2);
-	        Date date = new Date(bundle.getLong("pushtime"));
 	        
-	        SimpleDateFormat dateF = new SimpleDateFormat("yyyy-MM-dd");
+	        String date = "";
+	        String pt = bundle.getString("pushtime");
+	        date = pt.substring(0, 10);
+
 	        
-	        pushtime.setText("发布时间: "+dateF.format(date));
+	        pushtime.setText("发布时间: "+date);
 	        
 	        how_long = (TextView) findViewById(R.id.textView3);
 	        long time = bundle.getLong("how_long");
@@ -135,9 +143,9 @@ public class ProgramView extends Activity {
 	        TextView comment = (TextView) findViewById(R.id.textView4);
 	        comment.setText(bundle.getString("comment"));
 	        
-	        sound = new File(BASE.basePath+source);
-	        img = new File(BASE.basePath+sourceImg);
-	        downsound = new Downloader(BASE.baseUrl+source,BASE.basePath+source,mHandler);
+	        sound = new File(BASE.basePath+"programs/"+ID+".mp3");
+	        img = new File(BASE.basePath+"cache/"+ID+".png");
+	        downsound = new Downloader(source,BASE.basePath+"programs/"+ID+".mp3",mHandler);
 	        
 	        seekBar = (SeekBar) findViewById(R.id.seekBar1);
 	        bar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -149,8 +157,8 @@ public class ProgramView extends Activity {
 			drawImg();
 			
 			
-	        f = new File(BASE.basePath+source);
-	        fileFlag = new File(BASE.basePath+source+".flag");
+	        f = new File(BASE.basePath+"programs/"+ID+".mp3");
+	        fileFlag = new File(BASE.basePath+"programs"+ID+".flag");
 	        
 	        but1 = (Button) findViewById(R.id.downLoad);
 	        but2 = (Button) findViewById(R.id.deleteP);
@@ -161,7 +169,7 @@ public class ProgramView extends Activity {
 	        //判断文件是否已经下载完整
 	        fileIsFinished = false;
 	        
-	        if(f.exists()&&f.length()==filesize&&fileFlag.exists())
+	        if(f.exists()&&fileFlag.exists())
 	        	fileIsFinished = true;
 	        
 			//文件是否已经下载完
@@ -174,7 +182,7 @@ public class ProgramView extends Activity {
 	        	if(mp==null)
 	        	{
 	        		mp = new MediaPlayer();
-	        		mp.setDataSource(BASE.basePath+source);
+	        		mp.setDataSource(BASE.basePath+"programs/"+ID+".mp3");
 	        		mp.prepare();
 	        	}
 	        	
@@ -194,7 +202,7 @@ public class ProgramView extends Activity {
 	        //如果文件正在播放，那么应该是显示 暂停和停止按钮
 	        if(mp!=null)
 	        {
-		    	if(Playing!=null&&Playing.equalsIgnoreCase(BASE.basePath+source)&&mp.isPlaying())
+		    	if(Playing!=null&&Playing.equalsIgnoreCase(BASE.basePath+"programs/"+ID+".mp3")&&mp.isPlaying())
 		    	{
 		    		changetoSeekBar();
 		    		stopProgressUpdate();
@@ -210,10 +218,6 @@ public class ProgramView extends Activity {
 		}catch(Exception e)
 		{
 			e.printStackTrace();
-		}finally{
-			//关闭数据库
-			//Dao.closeDb();
-			
 		}
     }
 	
@@ -326,7 +330,7 @@ public class ProgramView extends Activity {
     						// TODO Auto-generated catch block
     						e.printStackTrace();
     					}
-    					Drawable drawImg = BitmapDrawable.createFromStream(imgIn, sourceImg);
+    					Drawable drawImg = BitmapDrawable.createFromStream(imgIn,"img");
     					imgV.setImageDrawable(drawImg);
     				}else
     				if(msg.what==2)
@@ -335,7 +339,7 @@ public class ProgramView extends Activity {
     				}
     			}
     		};
-    		Downloader downImg = new Downloader(BASE.baseUrl+sourceImg, BASE.basePath+sourceImg, imgH);
+    		Downloader downImg = new Downloader(sourceImg, BASE.basePath+"cache/"+ID+".png", imgH);
     		downImg.start();
     		
     	}else{
@@ -346,7 +350,7 @@ public class ProgramView extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Drawable drawImg = BitmapDrawable.createFromStream(imgIn, sourceImg);
+			Drawable drawImg = BitmapDrawable.createFromStream(imgIn, "img");
 			imgV.setImageDrawable(drawImg);
     	}
     }
@@ -355,7 +359,7 @@ public class ProgramView extends Activity {
 	 */
 	public void deleteProgramFiles(View v)
 	{
-		if(f.exists()&&f.length()>0&&f.length()<filesize)
+		if(f.exists()&&!fileFlag.exists())
 		{
 			Toast.makeText(this, "未下载完成的文件删除完毕！！", Toast.LENGTH_SHORT).show();
 			f.delete();
@@ -389,7 +393,7 @@ public class ProgramView extends Activity {
 			return;
 		
 		//if(downsound==null)
-		downsound = new Downloader(BASE.baseUrl+source,BASE.basePath+source,mHandler);
+		downsound = new Downloader(source,BASE.basePath+"programs/"+ID+".mp3",mHandler);
 		
 		Log.v("Debug", "download "+source);
 		
@@ -477,7 +481,7 @@ public class ProgramView extends Activity {
     		}
     		mp = new MediaPlayer();
     		
-    		mp.setDataSource(BASE.basePath+source);
+    		mp.setDataSource(BASE.basePath+"programs/"+ID+".mp3");
     		mp.prepare();
     		
     		mp.setOnCompletionListener(new OnCompletionListener() {
@@ -501,9 +505,9 @@ public class ProgramView extends Activity {
             }
             mp.start();
 			
-            Log.v("PLAY",BASE.basePath+source);
+            Log.v("PLAY",BASE.basePath+"programs/"+ID+".mp3");
             
-            Playing = BASE.basePath+source;
+            Playing = BASE.basePath+"programs/"+ID+".mp3";
             
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block

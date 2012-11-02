@@ -20,17 +20,15 @@ import android.util.Xml;
 public class PullAuthorHandler {
 
 	//解析用到的tag
-		private String _entryname = "author";
-		private String _Cname = "Cname";
-		private String _Ename = "Ename";
-		private String _program_name = "program_name";
-		private String _summary = "summary";
-		private String _tot_program = "tot_program";
+		private String _entryname = "dict";
 		
 		//用于保存xml解析获取的结果 
 		private ArrayList<AuthorEntry> authorEntryList = null;
 		private AuthorEntry authorEntry = null;
-		private Boolean startEntryElementFlag = false;
+		private boolean startEntryElementFlag = false;
+		private boolean startAuthor = false; 
+		
+		private String cmd = "@";
 		
 		 //解析xml数据 
 		public ArrayList<AuthorEntry> parse(InputStream inStream)
@@ -55,41 +53,60 @@ public class PullAuthorHandler {
 	            		case XmlPullParser.START_TAG:
 	            		{
 	            			localName = xmlPullParser.getName();
-	            			if(localName.equalsIgnoreCase(_entryname))
+	            			if(localName.equalsIgnoreCase("array"))
+	            			{
+	            				startAuthor = true;
+	            			}else
+	            			if(startAuthor&&localName.equals(_entryname))
 	            			{
 	            				authorEntry = new AuthorEntry();
 	            				startEntryElementFlag = true;
 	            			}else
 	            			if(startEntryElementFlag)
 	            			{
-	            				String currentData = null;
-	            				if(localName.equalsIgnoreCase(_Cname))
+	            				if(cmd.equals("@"))
 	            				{
-	            					currentData = xmlPullParser.nextText();
-	            					authorEntry.setCname(currentData.trim());
+	            					cmd = xmlPullParser.nextText();
 	            				}else
-	            				if(localName.equalsIgnoreCase(_Ename))
 	            				{
-	            					currentData = xmlPullParser.nextText();
-	            					authorEntry.setEname(currentData.trim());
-	            				}else
-	            				if(localName.equalsIgnoreCase(_program_name))
-	            				{
-	            					currentData = xmlPullParser.nextText();
-	            					authorEntry.setProgram_name(currentData.trim());
-	            				}else
-	            				if(localName.equalsIgnoreCase(_summary))
-	            				{
-	            					currentData = xmlPullParser.nextText();
-	            					authorEntry.setSummary(currentData.trim());
-	            				}else
-	            				if(localName.equalsIgnoreCase(_tot_program))
-	            				{
-	            					currentData = xmlPullParser.nextText();
-	            					int tot = Integer.parseInt(currentData);
-	            					authorEntry.setTot_program(tot);
-	            				}
+	            					String str = xmlPullParser.nextText();
+	            					
+	            					if(cmd.equals("Name"))
+	            					{
+	            						authorEntry.setName(str);
+	            					}else
+	            					if(cmd.equals("ID"))
+	            					{
+	            						int id = Integer.parseInt(str);
+	            						authorEntry.setID(id);
+	            					}else
+	            					if(cmd.equals("ThumbImageURL"))
+	            					{
+	            						authorEntry.setThumbImageUrl(str);
+	            					}else
+	            					if(cmd.equals("BigImageURL"))
+	            					{
+	            						authorEntry.setBigImageUrl(str);
+	            					}else
+	            					if(cmd.equals("Description"))
+	            					{
+	            						authorEntry.setDescription(str);
+	            					}else
+	            					if(cmd.equals("WeiboURL"))
+	            					{
+	            						authorEntry.setWeiboURL(str);
+	            					}else
+	            					if(cmd.equals("WeiboName"))
+	            					{
+	            						authorEntry.setWeiboName(str);
+	            					}else
+	            					if(cmd.equals("Email"))
+	            					{
+	            						authorEntry.setEmail(str);
+	            					}
 	            				
+	            					cmd = "@";
+	            				}
 	            			}
 	            		};break;
 	            		case XmlPullParser.END_TAG:

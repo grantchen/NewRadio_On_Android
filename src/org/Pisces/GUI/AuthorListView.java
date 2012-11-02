@@ -58,7 +58,7 @@ public class AuthorListView {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				changeToHumming();
+				//changeToHumming();
 				
 			}
 		});
@@ -78,7 +78,7 @@ public class AuthorListView {
 	public void getinfo()
 	{
 		//InputStream authorStream = GetXml.getXmlFromInternet("http://bchine.com/pisces/newradio/authors.xml");
-		InputStream authorStream = GetXml.getXmlFromSDcard(BASE.basePath+"authors.xml");
+		InputStream authorStream = GetXml.getXmlFromSDcard(BASE.basePath+"DJ.aspx");
         
         PullAuthorHandler pullHandler = new PullAuthorHandler();
         
@@ -101,11 +101,8 @@ public class AuthorListView {
 
 				AuthorEntry selected = authorEntryList.get(arg2);
 				
-				bundle.putString("Cname", selected.getCname());
-				bundle.putString("Ename", selected.getEname());
-				bundle.putString("program_name", selected.getProgram_name());
-				bundle.putString("summary", selected.getSummary());
-				bundle.putInt("tot_program", selected.getTot_program());
+				bundle.putInt("DJ", selected.getID());
+				bundle.putString("", selected.getAlbum(selected.getID()));
 
 				intent.putExtras(bundle);
 				father.startActivity(intent);
@@ -128,12 +125,12 @@ public class AuthorListView {
 	
 	private void downXml(boolean isRefersh)
 	{
-		File f= new File(BASE.basePath+"authors.xml");
+		File f= new File(BASE.basePath+"DJ.aspx");
 		if(isRefersh||!f.exists()||f.length()==0)
 		{
 			if(f.exists())
 				f.delete();
-			Downloader down = new Downloader(BASE.baseUrl+"authors.xml", BASE.basePath+"authors.xml", handler);
+			Downloader down = new Downloader(BASE.baseUrl+"DJ.aspx", BASE.basePath+"DJ.aspx", handler);
 			down.start();
 		}else
 		if(f.exists()&&f.length()>0) getinfo();

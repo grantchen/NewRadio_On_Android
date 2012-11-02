@@ -10,8 +10,6 @@ package org.Pisces.newradio;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -212,7 +210,7 @@ public class RecordVoice extends Activity{
 			
 			//InputStream programStream = new GetXml().getXmlFromSDcard(basePath+author.trim()+".xml");
 	        
-	        PullProgramHandler pullHandler = new PullProgramHandler();
+	        PullProgramHandler pullHandler = new PullProgramHandler(20);
 	        
 	        programEntryList = pullHandler.parse(programStream);
 	        
@@ -235,15 +233,15 @@ public class RecordVoice extends Activity{
 					ProgramEntry selected = programEntryList.get(arg2);
 					
 					bundle.putString("title", selected.getTitle());
-					bundle.putLong("pushtime", selected.getPushtime());
+					//bundle.putLong("pushtime", selected.getPushtime());
 					bundle.putLong("how_long", selected.getHow_long());
-					bundle.putString("subtitle", selected.getSubtitle());
+					//bundle.putString("subtitle", selected.getSubtitle());
 					bundle.putString("comment", selected.getComment());
 					bundle.putString("source", selected.getSource());
 					bundle.putString("img", selected.getImg());
 					bundle.putInt("ID", selected.getID());
-					bundle.putLong("filesize", selected.getFilesize());
-					bundle.putString("author", selected.getAuthor());
+					//bundle.putLong("filesize", selected.getFilesize());
+					//bundle.putString("author", selected.getAuthor());
 					
 					
 					intent.putExtras(bundle);
