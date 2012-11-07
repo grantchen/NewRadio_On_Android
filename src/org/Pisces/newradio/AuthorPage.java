@@ -24,7 +24,7 @@ public class AuthorPage extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.authorpage);
+        setContentView(R.layout.win8);
         MobclickAgent.onError(this);
         MobclickAgent.updateOnlineConfig(this);
         MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);

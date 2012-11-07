@@ -165,6 +165,7 @@ public class ListProgram extends Activity{
 				 if(programEntryList!=null)
 					 programEntryList.clear();
 				 getinfo(DJ);
+				 Toast.makeText(ListProgram.this, "更新成功！", Toast.LENGTH_SHORT).show();
 			 }else
 			if(msg.what==2)
 			{

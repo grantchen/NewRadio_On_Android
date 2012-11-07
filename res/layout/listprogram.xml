@@ -8,33 +8,12 @@
         android:id="@+id/programslist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/referProgram"
+        android:layout_above="@+id/relativeLayout1"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/nameofprogram"
-         >
-
+        android:background="@drawable/umeng_fb_bottom_banner"
+        android:scrollingCache="false" >
     </ListView>
-
-    <Button
-        android:id="@+id/referProgram"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="66dp"
-        android:text="刷新" />
-
-    <Button
-        android:id="@+id/backtoAuthors"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/programslist"
-        android:layout_marginRight="76dp"
-        android:onClick="backtoAuthors"
-        android:text="返回" />
 
     <TextView
         android:id="@+id/nameofprogram"
@@ -46,5 +25,34 @@
         android:gravity="center"
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" >
+
+        <Button
+            android:id="@+id/backtoAuthors"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="56dp"
+            android:onClick="backtoAuthors"
+            android:text="返回" />
+
+        <Button
+            android:id="@+id/referProgram"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="56dp"
+            android:text="刷新" />
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -9,6 +9,7 @@ Author: lazydomino@163.com(pisces)
 package org.Pisces.GUI;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -25,14 +26,19 @@ import org.Pisces.newradio.RecordVoice;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -43,34 +49,27 @@ public class AuthorListView {
     private ArrayAdapter<AuthorEntry> adapter;  
     private ArrayList<AuthorEntry> authorEntryList;
     private Activity father;
-    private Button but1,but2;
     
+    private ImageView img1 = null;
+    private ImageView img2 = null;
+    private ImageView img3 = null;
+    private ImageView img4 = null;
+    private ImageView img5 = null;
+    private ImageView img6 = null;
     
 	public AuthorListView(AuthorPage father)
 	{
 		super();
 		this.father = father;
-		but2 = (Button) father.findViewById(R.id.button2);
-		but1 = (Button) father.findViewById(R.id.button1);
+		//but2 = (Button) father.findViewById(R.id.button2);
+		//but1 = (Button) father.findViewById(R.id.button1);
 		
-		but1.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//changeToHumming();
-				
-			}
-		});
-		
-		but2.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				refersh(v);
-			}
-		});
+		img1 = (ImageView) father.findViewById(R.id.imageView1);
+		img2 = (ImageView) father.findViewById(R.id.imageView2);
+		img3 = (ImageView) father.findViewById(R.id.imageView3);
+		img4 = (ImageView) father.findViewById(R.id.imageView4);
+		img5 = (ImageView) father.findViewById(R.id.imageView5);
+		img6 = (ImageView) father.findViewById(R.id.imageView6);
 		
 		downXml(false);
 	}
@@ -84,32 +83,90 @@ public class AuthorListView {
         
         authorEntryList = pullHandler.parse(authorStream);
         
-        list = (ListView) father.findViewById(R.id.listauthors);
         adapter = new ArrayAdapter<AuthorEntry>(father, android.R.layout.simple_list_item_1, authorEntryList);
+       
         
-        list.setAdapter(adapter);
+        setListener();
         
-        OnItemClickListener lis1 = new OnItemClickListener() {
 
+	}
+	
+	private void setListener()
+	{
+		OnClickListener lis1 = new OnClickListener() {
+			
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(father, ListProgram.class);
-				Bundle bundle = new Bundle();
-
-				AuthorEntry selected = authorEntryList.get(arg2);
-				
-				bundle.putInt("DJ", selected.getID());
-				bundle.putString("", selected.getAlbum(selected.getID()));
-
-				intent.putExtras(bundle);
-				father.startActivity(intent);
+				changeToDJ(0);
 			}
 		};
-		list.setOnItemClickListener(lis1);
+		OnClickListener lis2 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(1);
+			}
+		};
+		OnClickListener lis3 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(2);
+			}
+		};
+		OnClickListener lis4 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(3);
+			}
+		};
+		OnClickListener lis5 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(4);
+			}
+		};
+		OnClickListener lis6 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(5);
+			}
+		};
+		
+		img1.setOnClickListener(lis4);
+		img2.setOnClickListener(lis3);
+		img3.setOnClickListener(lis2);
+		img4.setOnClickListener(lis6);
+		img5.setOnClickListener(lis1);
+		img6.setOnClickListener(lis5);
+		
 	}
+	
+	private void changeToDJ(int num)
+	{
+		
+		Intent intent = new Intent();
+		intent.setClass(father, ListProgram.class);
+		Bundle bundle = new Bundle();
+		
+		AuthorEntry selected = authorEntryList.get(num);
+		
+		bundle.putInt("DJ", selected.getID());
+		bundle.putString("", AuthorEntry.getAlbum(selected.getID()));
+
+		intent.putExtras(bundle);
+		father.startActivity(intent);
+	}
+	
 	
 	public void changeToHumming()
 	{
@@ -134,6 +191,7 @@ public class AuthorListView {
 			down.start();
 		}else
 		if(f.exists()&&f.length()>0) getinfo();
+		
 	}
 	private Handler handler = new Handler(){
 		 public void handleMessage(Message msg) {

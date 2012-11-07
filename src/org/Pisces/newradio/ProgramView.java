@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.Pisces.IO.BASE;
 import org.Pisces.IO.DirHelper;
@@ -26,6 +27,10 @@ import org.Pisces.newradio.R.id;
 
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
+import com.umeng.api.sns.UMSNSException;
+import com.umeng.api.sns.UMSnsService;
+import com.umeng.api.sns.UMSnsService.DataSendCallbackListener;
+import com.umeng.api.sns.UMSnsService.RETURN_STATUS;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
@@ -82,6 +87,7 @@ public class ProgramView extends Activity {
 	private boolean fileIsFinished = false;
 	private Button but1 = null;
 	private Button but2 = null;
+	private Button share = null;
 	private ImageView imgV = null;
 	private ProgressBar bar;
 	private SeekBar seekBar;
@@ -90,12 +96,14 @@ public class ProgramView extends Activity {
 	private File img = null;
 	private String source = null;
 	private String sourceImg = null;
+	private String title = null;
+	private int DJ = 0;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		
 		try{
 	        super.onCreate(savedInstanceState);
-	        setContentView(R.layout.programview2);
+	        setContentView(R.layout.programview);
 	        MobclickAgent.onError(this);
 	        MobclickAgent.updateOnlineConfig(this);
 	        MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);
@@ -116,9 +124,11 @@ public class ProgramView extends Activity {
 	        source = bundle.getString("source");
 	        sourceImg = bundle.getString("img");
 	        how_longP = bundle.getLong("how_long");
-	        
+	        title = bundle.getString("title");
+	        DJ = bundle.getInt("DJ");
+	     
 	        TextView subtitle = (TextView) findViewById(R.id.textView1);
-	        subtitle.setText(bundle.getString("title"));
+	        subtitle.setText(title);
 	        
 	        TextView pushtime = (TextView) findViewById(R.id.textView2);
 	        
@@ -141,7 +151,7 @@ public class ProgramView extends Activity {
 	        how_long.setText(res);
 	        
 	        TextView comment = (TextView) findViewById(R.id.textView4);
-	        comment.setText(bundle.getString("comment"));
+	        comment.setText(bundle.getString("comment")+"\n\n\n\n\n\n\n\n.");
 	        
 	        sound = new File(BASE.basePath+"programs/"+ID+".mp3");
 	        img = new File(BASE.basePath+"cache/"+ID+".png");
@@ -158,10 +168,11 @@ public class ProgramView extends Activity {
 			
 			
 	        f = new File(BASE.basePath+"programs/"+ID+".mp3");
-	        fileFlag = new File(BASE.basePath+"programs"+ID+".flag");
+	        fileFlag = new File(BASE.basePath+"programs/"+ID+".flag");
 	        
 	        but1 = (Button) findViewById(R.id.downLoad);
 	        but2 = (Button) findViewById(R.id.deleteP);
+	        share = (Button) findViewById(R.id.share);
 	        
 	        setListener();
 	        
@@ -229,7 +240,27 @@ public class ProgramView extends Activity {
 		//downsound.close();
 		this.finish();
 	}
-	
+	/*
+	 * 微博分享
+	 */
+	public void shareTo()
+	{
+		
+		try{
+			//UMSnsService.UseLocation=true;
+			//UMSnsService.LocationAuto=true;
+			//HashMap<String, String> map = new HashMap<String, String>();
+			//map.put("programName", " "+AuthorEntry.getAlbum(DJ)+"——《"+title+"》。");
+			
+			String shareStr = "我正在收听   "+AuthorEntry.getAlbum(DJ)+"——《"+title+"》。";
+			
+			//UMSnsService.shareToSina (this, shareStr, null);
+			UMSnsService.share(ProgramView.this, shareStr, null);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	/*
 	 * 下载
 	 */
@@ -361,6 +392,7 @@ public class ProgramView extends Activity {
 	{
 		if(f.exists()&&!fileFlag.exists())
 		{
+			if(fileFlag.exists()) fileFlag.delete();
 			Toast.makeText(this, "未下载完成的文件删除完毕！！", Toast.LENGTH_SHORT).show();
 			f.delete();
 			return;
@@ -426,6 +458,10 @@ public class ProgramView extends Activity {
 		downsound.stop();
 		but1.setText("继续");
     	but1.setOnClickListener(down);
+    	
+    	but2.setText("删除");
+    	but2.setOnClickListener(delete);
+    	
 	}
 	
 	private void pauseOnPlay(View v)
@@ -621,6 +657,14 @@ public class ProgramView extends Activity {
 					stopProgressUpdate();
 			}
 			
+		});
+		share.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				shareTo();
+			}
 		});
 		/*
 		 * end

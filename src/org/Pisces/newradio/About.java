@@ -18,6 +18,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,7 +39,13 @@ public class About extends Activity{
 	        
 	        web = (WebView) findViewById(R.id.webView1);
 	        
+	        
 	        File f = new File(BASE.basePath+"about.html");
+	        
+	        if(f.exists()) f.delete();
+	        
+	        web.loadUrl("file:///android_asset/about.html");
+	        
 	        handler = new Handler(){
         		public void handleMessage(Message msg){
         			if(msg.what==1)
@@ -47,22 +54,13 @@ public class About extends Activity{
         			}else
         			if(msg.what==2)
         			{
-        				
-        				//web.loadUrl(Resources.cla.)
         				//Toast.makeText(About.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
         			}
         		}
         	};
-	        if(!f.exists()||f.length()!=Downloader.getFilesize(BASE.AboutPath+"about.html",handler))
-	        {
-	        	
-	        	if(f.exists()) f.delete();
-	        	Downloader down = new Downloader(BASE.AboutPath+"about.html", BASE.basePath+"about.html", handler);
-	        	down.start();
-	        }else
-	        {
-	        	web.loadUrl("file://"+BASE.basePath+"about.html");
-	        }
+	      
+        	Downloader down = new Downloader(BASE.AboutPath+"about.html", BASE.basePath+"about.html", handler);
+        	down.start();
 	        
 	    }
 	 

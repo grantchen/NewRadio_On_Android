@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@drawable/back1" >
 
     <TextView
         android:id="@+id/textView2"
@@ -23,15 +24,6 @@
         android:gravity="right"
         android:text="textview3"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="46dp" >
-    </RelativeLayout>
 
     <SeekBar
         android:id="@+id/seekBar1"
@@ -59,15 +51,6 @@
             android:text="TextView4" />
     </ScrollView>
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="100dip"
-        android:layout_height="100dip"
-        android:layout_below="@+id/relativeLayout1"
-        android:layout_centerHorizontal="true"
-        android:maxHeight="@dimen/normal"
-        android:maxWidth="@dimen/normal" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -89,42 +72,74 @@
         android:layout_alignParentRight="true" />
 
     <Button
-        android:id="@+id/downLoad"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_alignTop="@+id/imageView1"
-        android:onClick="download"
-        android:text="下载" />
-
-    <Button
-        android:id="@+id/backTo"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_alignTop="@+id/imageView1"
-        android:onClick="backtoProgramList"
-        android:text="返回" />
-
-    <Button
-        android:id="@+id/deleteP"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView1"
-        android:layout_alignLeft="@+id/downLoad"
-        android:onClick="deleteProgramFiles"
-        android:text="删除" />
-
-    <Button
-        android:id="@+id/button1"
+        android:id="@+id/share"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/progressBar1"
         android:layout_centerHorizontal="true"
-        android:text="Button" />
+        android:layout_marginBottom="15dp"
+        android:text="社交分享" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/progressBar1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView1" >
+
+        <Button
+            android:id="@+id/downLoad"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="17dp"
+            android:layout_marginTop="17dp"
+            android:onClick="download"
+            android:text="下载" />
+
+        <Button
+            android:id="@+id/deleteP"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/downLoad"
+            android:layout_centerVertical="true"
+            android:onClick="deleteProgramFiles"
+            android:text="删除" />
+
+        <Button
+            android:id="@+id/backTo"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/downLoad"
+            android:layout_alignBottom="@+id/downLoad"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="23dp"
+            android:onClick="backtoProgramList"
+            android:text="返回" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/downLoad"
+            android:layout_centerHorizontal="true"
+            android:background="#000000"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="100dip"
+                android:layout_height="100dip"
+                android:maxHeight="@dimen/normal"
+                android:maxWidth="@dimen/normal" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </RelativeLayout>

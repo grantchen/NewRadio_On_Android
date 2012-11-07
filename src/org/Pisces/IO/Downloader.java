@@ -29,10 +29,10 @@ public class Downloader  {
 	private final int DOWN = 1;
 	private int state;
 	
-	private final static int DELY = 6000;
+	private final static int DELY = 5000;
 	
 	//定义的一些常量变量，看名字就知道什么意思了
-	private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 32;
 	private String urlStr;
 	private String savePath;
 	private int downloadPercent = 0;
@@ -158,7 +158,7 @@ public class Downloader  {
 							con.disconnect();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+					//	e.printStackTrace();
 					}
 				}
 						
