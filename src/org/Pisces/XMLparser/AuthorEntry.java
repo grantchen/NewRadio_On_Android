@@ -11,7 +11,8 @@ package org.Pisces.XMLparser;
 public class AuthorEntry {
 	
 	
-	private final static String Album[] = new String[25];
+	private static String Album[] = new String[25];
+	private static String weibo[] = new String[25];
 	
 	
 	private String Name = null;
@@ -33,6 +34,16 @@ public class AuthorEntry {
 		Album[20] = "陈丹的有声音乐杂志";
 		Album[21] = "隔墙有耳";
 		Album[22] = "李青的音乐枕头";
+		Album[23] = "New Radio 集合";
+		
+		weibo[0] = "出错了！";
+		weibo[4] = "@杨樾杨樾";
+		weibo[5] = "@DJ邝楠";
+		weibo[19] = "@DJ董鹏";
+		weibo[20] = "@DJ陈丹";
+		weibo[21] = "@曾克";
+		weibo[22] = "@古典的河流";
+		weibo[23] = "@NewRadio播客平台";
 		
 	}
 	
@@ -40,7 +51,6 @@ public class AuthorEntry {
 	public String getWeiboURL() {
 		return WeiboURL;
 	}
-
 
 
 	public void setWeiboURL(String weiboURL) {
@@ -98,9 +108,13 @@ public class AuthorEntry {
 	public String getWeiboName() {
 		return WeiboName;
 	}
+	public static String getWeiboName(int index) {
+		return weibo[index];
+	}
 
 	public void setWeiboName(String weiboName) {
 		WeiboName = weiboName;
+		weibo[this.ID] = weiboName;
 	}
 
 	public String getEmail() {
@@ -109,6 +123,26 @@ public class AuthorEntry {
 
 	public void setEmail(String email) {
 		Email = email;
+	}
+	public static void setInit()
+	{
+		Album[0] = "出错了！";
+		Album[4] = "YY CLUB";
+		Album[5] = "邝楠音乐随笔";
+		Album[19] = "奇妙的南瓜";
+		Album[20] = "陈丹的有声音乐杂志";
+		Album[21] = "隔墙有耳";
+		Album[22] = "李青的音乐枕头";
+		Album[23] = "New Radio 集合";
+		
+		weibo[0] = "出错了！";
+		weibo[4] = "@杨樾杨樾";
+		weibo[5] = "@DJ邝楠";
+		weibo[19] = "@DJ董鹏";
+		weibo[20] = "@DJ陈丹";
+		weibo[21] = "@曾克";
+		weibo[22] = "@古典的河流";
+		weibo[23] = "@NewRadio播客平台";
 	}
 
 	public String toString()

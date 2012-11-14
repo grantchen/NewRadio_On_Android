@@ -15,24 +15,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 
 import org.Pisces.IO.BASE;
 import org.Pisces.IO.DirHelper;
+import org.Pisces.IO.DownLoadersInfo;
 import org.Pisces.IO.Downloader;
+import org.Pisces.IO.PUB;
 import org.Pisces.XMLparser.AuthorEntry;
-import org.Pisces.newradio.R.id;
 
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
-import com.umeng.api.sns.UMSNSException;
 import com.umeng.api.sns.UMSnsService;
-import com.umeng.api.sns.UMSnsService.DataSendCallbackListener;
-import com.umeng.api.sns.UMSnsService.RETURN_STATUS;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -76,6 +72,7 @@ public class ProgramView extends Activity {
 	private File fileFlag;
 	private long how_longP;
 	private int ID;
+	private String weiboName;
 	private Downloader downsound;//下载器
 	
 	private static MediaPlayer mp = null;
@@ -99,6 +96,7 @@ public class ProgramView extends Activity {
 	private String title = null;
 	private int DJ = 0;
 	
+	private Context mContext;
 	public void onCreate(Bundle savedInstanceState) {
 		
 		try{
@@ -107,6 +105,8 @@ public class ProgramView extends Activity {
 	        MobclickAgent.onError(this);
 	        MobclickAgent.updateOnlineConfig(this);
 	        MobclickAgent.setDefaultReportPolicy(this, ReportPolicy.BATCH_AT_LAUNCH);
+	        
+	        mContext = ProgramView.this;
 	        
 	        bundle = this.getIntent().getExtras();
 	        
@@ -126,6 +126,7 @@ public class ProgramView extends Activity {
 	        how_longP = bundle.getLong("how_long");
 	        title = bundle.getString("title");
 	        DJ = bundle.getInt("DJ");
+	        weiboName = bundle.getString("weiboName");
 	     
 	        TextView subtitle = (TextView) findViewById(R.id.textView1);
 	        subtitle.setText(title);
@@ -224,11 +225,26 @@ public class ProgramView extends Activity {
 		    		but2.setOnClickListener(stop);
 		    	}
 	        }
+	        if(PUB.contain(source))
+	        {
+	        	downsound = PUB.getDownloader(source);
+
+	        	downsound.setHandler(mHandler);
+		        but1.setText("暂停");
+		        but1.setOnClickListener(pause);
+		        
+		        but2.setText("停止");
+		        but2.setOnClickListener(pause);
+	        	
+	        	
+	        	
+	        	
+	        }
 	        
 	        
 		}catch(Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
     }
 	
@@ -247,18 +263,18 @@ public class ProgramView extends Activity {
 	{
 		
 		try{
-			//UMSnsService.UseLocation=true;
-			//UMSnsService.LocationAuto=true;
+			UMSnsService.UseLocation=true;
+			UMSnsService.LocationAuto=true;
 			//HashMap<String, String> map = new HashMap<String, String>();
 			//map.put("programName", " "+AuthorEntry.getAlbum(DJ)+"——《"+title+"》。");
 			
-			String shareStr = "我正在收听   "+AuthorEntry.getAlbum(DJ)+"——《"+title+"》。";
+			String shareStr = weiboName+" @双鱼座骨牌 。 我正在收听   "+AuthorEntry.getAlbum(DJ)+"——《"+title+"》。";
 			
 			//UMSnsService.shareToSina (this, shareStr, null);
 			UMSnsService.share(ProgramView.this, shareStr, null);
 		}catch (Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	/*
@@ -341,48 +357,58 @@ public class ProgramView extends Activity {
      */
     private void drawImg()
     {
-    	//imgV.setScaleType(ScaleType.CENTER_INSIDE);
-    	//imgV.setAdjustViewBounds(true);
-    	imgV.setMaxHeight(70);
-    	imgV.setMaxHeight(70);
-    	imgV.setMinimumHeight(70);
-    	imgV.setMinimumWidth(70);
-    	
-    	if(!img.exists()||img.length()==0)
+    	try{
+	    	//imgV.setScaleType(ScaleType.CENTER_INSIDE);
+	    	//imgV.setAdjustViewBounds(true);
+	    	imgV.setMaxHeight(70);
+	    	imgV.setMaxHeight(70);
+	    	imgV.setMinimumHeight(70);
+	    	imgV.setMinimumWidth(70);
+	    	
+	    	if(!img.exists()||img.length()==0)
+	    	{
+	    		Handler imgH = new Handler(){
+	    			public void handleMessage(Message msg){
+	    				if(msg.what==1)
+	    				{
+	    					InputStream imgIn = null;
+	    					try {
+	    						imgIn = new FileInputStream(img);
+	    					} catch (FileNotFoundException e) {
+	    						// TODO Auto-generated catch block
+	    						e.printStackTrace();
+	    					}
+	    					Drawable drawImg = BitmapDrawable.createFromStream(imgIn,"img");
+	    					imgV.setImageDrawable(drawImg);
+	    					drawImg = null;
+	    					System.gc();
+	    				}else
+	    				if(msg.what==2)
+	    				{
+	    					Toast.makeText(ProgramView.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+	    				}
+	    			}
+	    		};
+	    		Downloader downImg = new Downloader(sourceImg, BASE.basePath+"cache/"+ID+".png", imgH);
+	    		downImg.start();
+	    		
+	    	}else{
+		    	InputStream imgIn = null;
+				try {
+					imgIn = new FileInputStream(img);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Drawable drawImg = BitmapDrawable.createFromStream(imgIn, "img");
+				imgV.setImageDrawable(drawImg);
+				drawImg = null;
+				System.gc();
+	    	}
+    	}catch (OutOfMemoryError e)
     	{
-    		Handler imgH = new Handler(){
-    			public void handleMessage(Message msg){
-    				if(msg.what==1)
-    				{
-    					InputStream imgIn = null;
-    					try {
-    						imgIn = new FileInputStream(img);
-    					} catch (FileNotFoundException e) {
-    						// TODO Auto-generated catch block
-    						e.printStackTrace();
-    					}
-    					Drawable drawImg = BitmapDrawable.createFromStream(imgIn,"img");
-    					imgV.setImageDrawable(drawImg);
-    				}else
-    				if(msg.what==2)
-    				{
-    					Toast.makeText(ProgramView.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
-    				}
-    			}
-    		};
-    		Downloader downImg = new Downloader(sourceImg, BASE.basePath+"cache/"+ID+".png", imgH);
-    		downImg.start();
-    		
-    	}else{
-	    	InputStream imgIn = null;
-			try {
-				imgIn = new FileInputStream(img);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Drawable drawImg = BitmapDrawable.createFromStream(imgIn, "img");
-			imgV.setImageDrawable(drawImg);
+    		Log.e("OutOfMemory","Bitmap is too large!");
+    		System.gc();
     	}
     }
     /*
@@ -421,11 +447,12 @@ public class ProgramView extends Activity {
 	public void download(View v)
 	{
 		
-		if (downsound.isDownloading())
+		if (downsound.isDownloading()||PUB.contain(source))
 			return;
 		
 		//if(downsound==null)
 		downsound = new Downloader(source,BASE.basePath+"programs/"+ID+".mp3",mHandler);
+		PUB.add(new DownLoadersInfo(downsound.getUrl(), downsound,ID,source,sourceImg,how_longP,title,DJ,bundle.getString("comment"),bundle.getString("pushtime")));
 		
 		Log.v("Debug", "download "+source);
 		
@@ -658,6 +685,7 @@ public class ProgramView extends Activity {
 			}
 			
 		});
+		
 		share.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -666,9 +694,6 @@ public class ProgramView extends Activity {
 				shareTo();
 			}
 		});
-		/*
-		 * end
-		 */
 	}
 	
 	private void startProgressUpdate(){

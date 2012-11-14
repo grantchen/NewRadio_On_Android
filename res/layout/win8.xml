@@ -2,17 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/rootblock_default_bg"
     android:orientation="horizontal"
-    android:paddingTop="30dp"
     android:paddingBottom="30dp"
     android:paddingLeft="20dp"
-    android:background="@drawable/rootblock_default_bg"
-    >
-
+    android:paddingTop="30dp" >
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="411dp"
-        android:layout_weight="0.70"
+        android:layout_height="450dp"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -21,10 +19,10 @@
             android:orientation="horizontal" >
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="#feeeed" >
-
+
                 <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="match_parent"
@@ -34,8 +32,8 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_marginLeft="5dp"
                 android:background="#feeeed" >
 
@@ -55,8 +53,8 @@
             android:orientation="horizontal" >
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="#feeeed" >
 
                 <ImageView
@@ -68,8 +66,8 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_marginLeft="5dp"
                 android:background="#feeeed" >
 
@@ -89,8 +87,8 @@
             android:orientation="horizontal" >
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="#feeeed" >
 
                 <ImageView
@@ -102,8 +100,8 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="108dp"
-                android:layout_height="108dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_marginLeft="5dp"
                 android:background="#feeeed" >
 
@@ -115,6 +113,33 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="#feeeed" >
+
+                    <ImageView
+                        android:id="@+id/ImageView7"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/newradio2" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout 
@@ -122,29 +147,38 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:layout_weight="1">
-       	<RelativeLayout 
+
+       	<RelativeLayout
        	    android:layout_width="fill_parent"
-       	    android:layout_height="fill_parent"
-       	    >
+       	    android:layout_height="fill_parent" >
 
-     	    <LinearLayout
-     	        android:layout_width="wrap_content"
-     	        android:layout_height="wrap_content"
-     	        android:layout_alignParentBottom="true"
-     	        android:layout_centerHorizontal="true"
-     	        android:orientation="vertical" >
-
-     	        <ImageView
-     	            android:id="@+id/download_btn"
-     	            android:layout_width="36dp"
-     	            android:layout_height="36dp"
-     	            android:layout_marginTop="20dp"
-     	            android:src="@drawable/about" 
-     	            android:onClick="about"
-     	            />
+       	    <LinearLayout
+       	        android:id="@+id/linearLayout1"
+       	        android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:layout_alignParentBottom="true"
+       	        android:layout_centerHorizontal="true"
+       	        android:orientation="vertical" >
 
-     	    </LinearLayout>
+       	        <ImageView
+       	            android:id="@+id/download_btn"
+       	            android:layout_width="36dp"
+       	            android:layout_height="36dp"
+       	            android:layout_marginTop="20dp"
+       	            android:onClick="about"
+       	            android:src="@drawable/about" />
+       	    </LinearLayout>
 
-       	</RelativeLayout> 
+       	    <ImageView
+       	        android:id="@+id/download"
+       	        android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:layout_above="@+id/linearLayout1"
+       	        android:layout_alignLeft="@+id/linearLayout1"
+       	        android:src="@drawable/rootblock_icon_download" 
+       	        android:onClick="downing"/>
+
+       	</RelativeLayout>
+ 
     </LinearLayout>
 </LinearLayout>

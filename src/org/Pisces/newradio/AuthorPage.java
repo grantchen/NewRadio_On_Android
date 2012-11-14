@@ -2,6 +2,7 @@ package org.Pisces.newradio;
 
 import org.Pisces.GUI.AuthorListView;
 import org.Pisces.IO.DirHelper;
+import org.Pisces.XMLparser.AuthorEntry;
 
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.ReportPolicy;
@@ -39,6 +40,8 @@ public class AuthorPage extends Activity {
         
         listView = new AuthorListView(AuthorPage.this);
         
+        
+        AuthorEntry.setInit();
     }
     
 
@@ -75,6 +78,12 @@ public class AuthorPage extends Activity {
 		this.startActivity(intent);
     }
     
+    public void downing(View v)
+    {
+    	Intent intent = new Intent();
+		intent.setClass(this, ListDownloading.class);
+		this.startActivity(intent);
+    }
     
     
     //umeng统计

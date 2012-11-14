@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -80,8 +79,13 @@ public class ListProgram extends Activity{
 	        
 	        this.DJ = bundle.getInt("DJ");
 	        text.setText(AuthorEntry.getAlbum(DJ));
-
+	        
 	        downXml(false);
+	        
+	        File f= new File(BASE.basePath+"Podcast.aspx");
+	        Downloader.getFilesize(BASE.baseUrl+"Podcast.aspx", f.length(), sizeHandler);
+	        
+	        
 	    }
 	 
 	 public void getinfo(int DJ)
@@ -124,6 +128,7 @@ public class ListProgram extends Activity{
 					bundle.putString("img", selected.getImg());
 					bundle.putInt("ID", selected.getID());
 					bundle.putInt("DJ", selected.getDJ());
+					bundle.putString("weiboName",AuthorEntry.getWeiboName(selected.getDJ()));
 					
 					
 					intent.putExtras(bundle);
@@ -135,12 +140,12 @@ public class ListProgram extends Activity{
 		}
 		
 	 
-	 public void backtoAuthors(View v)
-	 {
-		 this.finish();
-	 }
+	public void backtoAuthors(View v)
+	{
+	    this.finish();
+	}
 	 
-	 public void refersh(View v)
+	public void refersh(View v)
 	{
 		downXml(true);
 	}
@@ -170,6 +175,27 @@ public class ListProgram extends Activity{
 			if(msg.what==2)
 			{
 				Toast.makeText(ListProgram.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+			}
+		 }
+	 };
+	 private Handler sizeHandler = new Handler()
+	 {
+		 public void handleMessage(Message msg) {
+			 if(msg.what==0)
+			 {
+				 downXml(false);
+			 }else
+			if(msg.what==2)
+			{
+				File f= new File(BASE.basePath+"Podcast.aspx");
+				if(f.exists())
+					downXml(false);
+				else
+					Toast.makeText(ListProgram.this, "请连接网络获取列表！！", Toast.LENGTH_SHORT).show();
+					
+			}else
+			{
+				 downXml(true);
 			}
 		 }
 	 };

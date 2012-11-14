@@ -9,7 +9,6 @@ Author: lazydomino@163.com(pisces)
 package org.Pisces.GUI;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -26,22 +25,15 @@ import org.Pisces.newradio.RecordVoice;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class AuthorListView {
 	
@@ -56,7 +48,7 @@ public class AuthorListView {
     private ImageView img4 = null;
     private ImageView img5 = null;
     private ImageView img6 = null;
-    
+    private ImageView img7 = null;
 	public AuthorListView(AuthorPage father)
 	{
 		super();
@@ -70,8 +62,11 @@ public class AuthorListView {
 		img4 = (ImageView) father.findViewById(R.id.imageView4);
 		img5 = (ImageView) father.findViewById(R.id.imageView5);
 		img6 = (ImageView) father.findViewById(R.id.imageView6);
+		img7 = (ImageView) father.findViewById(R.id.ImageView7);
 		
 		downXml(false);
+		File f= new File(BASE.basePath+"DJ.aspx");
+		Downloader.getFilesize(BASE.baseUrl+"DJ.aspx", f.length(), sizeH);
 	}
 	
 	public void getinfo()
@@ -141,6 +136,14 @@ public class AuthorListView {
 				changeToDJ(5);
 			}
 		};
+		OnClickListener lis7 = new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				changeToDJ(6);
+			}
+		};
 		
 		img1.setOnClickListener(lis4);
 		img2.setOnClickListener(lis3);
@@ -148,6 +151,7 @@ public class AuthorListView {
 		img4.setOnClickListener(lis6);
 		img5.setOnClickListener(lis1);
 		img6.setOnClickListener(lis5);
+		img7.setOnClickListener(lis7);
 		
 	}
 	
@@ -204,6 +208,21 @@ public class AuthorListView {
 			 if(msg.what==2)
 			 {
 				 Toast.makeText(father, "网络连接失败！", Toast.LENGTH_SHORT).show();
+			 }
+		 }
+	};
+	private Handler sizeH = new Handler(){
+		 public void handleMessage(Message msg) {
+			 if(msg.what==0)
+			 {
+				downXml(false);
+			 }else
+			 if(msg.what==2)
+			 {
+				 Toast.makeText(father, "网络连接失败！", Toast.LENGTH_SHORT).show();
+			 }else
+			 {
+				 downXml(true);
 			 }
 		 }
 	};

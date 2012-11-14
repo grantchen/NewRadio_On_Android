@@ -55,6 +55,7 @@ public class About extends Activity{
         			if(msg.what==2)
         			{
         				//Toast.makeText(About.this, "网络连接失败！", Toast.LENGTH_SHORT).show();
+        				web.loadUrl("file:///android_asset/about.html");
         			}
         		}
         	};
